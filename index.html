@@ -1,0 +1,2054 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parametric 3D Box Generator</title>
+    <meta name="description" content="Parametric 3D-printable storage box generator with real-time 3D preview, filament material estimator, and Bambu Studio compatible STL export." />
+    <meta property="og:title" content="Parametric 3D Box Generator" />
+    <meta property="og:description" content="Parametric 3D-printable storage box generator with real-time 3D preview, filament material estimator, and Bambu Studio compatible STL export." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Three.js & Plugins via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/STLExporter.js"></script>
+
+    <style>
+      :root {
+        --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+
+        /* Dark Theme Default */
+        --bg-main: #0b0f19;
+        --bg-panel: #111827;
+        --bg-surface: #1e293b;
+        --bg-surface-hover: #334155;
+        --bg-input: #0f172a;
+        --border-color: #334155;
+        --border-focus: #00ae42;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --accent-bambu: #00ae42;
+        --accent-bambu-hover: #009638;
+        --accent-blue: #38bdf8;
+        --warning-bg: rgba(239, 68, 68, 0.15);
+        --warning-border: #ef4444;
+        --warning-text: #fca5a5;
+        --success-bg: rgba(16, 185, 129, 0.15);
+        --success-border: #10b981;
+        --success-text: #6ee7b7;
+        --badge-bg: #1e293b;
+        --shadow-elevation: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+      }
+
+      body.light-theme {
+        --bg-main: #f1f5f9;
+        --bg-panel: #ffffff;
+        --bg-surface: #f8fafc;
+        --bg-surface-hover: #f1f5f9;
+        --bg-input: #ffffff;
+        --border-color: #e2e8f0;
+        --border-focus: #00ae42;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --accent-bambu: #00ae42;
+        --accent-bambu-hover: #009638;
+        --accent-blue: #0284c7;
+        --warning-bg: #fee2e2;
+        --warning-border: #ef4444;
+        --warning-text: #b91c1c;
+        --success-bg: #dcfce7;
+        --success-border: #10b981;
+        --success-text: #047857;
+        --badge-bg: #e2e8f0;
+        --shadow-elevation: 0 4px 20px -2px rgba(0, 0, 0, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-sans);
+        background-color: var(--bg-main);
+        color: var(--text-primary);
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      /* TOP APP HEADER */
+      .app-header {
+        height: 56px;
+        background-color: var(--bg-panel);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        z-index: 40;
+        flex-shrink: 0;
+      }
+
+      .header-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #00ae42 0%, #10b981 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 174, 66, 0.35);
+      }
+
+      .brand-title {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .brand-tag {
+        font-size: 11px;
+        font-weight: 600;
+        font-family: var(--font-mono);
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .header-center {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      /* Bambu Build Plate Status Badge */
+      .bambu-status-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        font-family: var(--font-mono);
+        transition: all 0.25s ease;
+      }
+
+      .bambu-status-badge.fit {
+        background-color: var(--success-bg);
+        border: 1px solid var(--success-border);
+        color: var(--success-text);
+      }
+
+      .bambu-status-badge.exceeded {
+        background-color: var(--warning-bg);
+        border: 1px solid var(--warning-border);
+        color: var(--warning-text);
+        animation: pulseAlert 1.5s infinite;
+      }
+
+      @keyframes pulseAlert {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+        50% { transform: scale(1.02); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-icon {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-icon:hover {
+        background: var(--bg-surface-hover);
+        color: var(--text-primary);
+        border-color: var(--border-focus);
+      }
+
+      /* MAIN APP LAYOUT */
+      .app-main {
+        display: flex;
+        flex: 1;
+        height: calc(100vh - 56px);
+        overflow: hidden;
+      }
+
+      /* LEFT CONTROL PANEL */
+      .control-panel {
+        width: 400px;
+        min-width: 340px;
+        max-width: 440px;
+        background-color: var(--bg-panel);
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 30;
+      }
+
+      .control-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      /* Custom scrollbar */
+      .control-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .control-scroll::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .control-scroll::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 4px;
+      }
+
+      /* CONTROL SECTIONS */
+      .control-section {
+        background-color: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        box-shadow: var(--shadow-elevation);
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .section-title {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .section-title svg {
+        color: var(--accent-bambu);
+      }
+
+      /* PRESETS BAR */
+      .presets-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+
+      .preset-chip {
+        background-color: var(--bg-input);
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 6px 4px;
+        border-radius: 6px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.15s ease;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .preset-chip:hover {
+        background-color: var(--bg-surface-hover);
+        color: var(--text-primary);
+        border-color: var(--border-focus);
+      }
+
+      /* PARAMETER ROW */
+      .param-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .param-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        font-weight: 500;
+      }
+
+      .param-name {
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .axis-tag {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .axis-x { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+      .axis-y { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+      .axis-z { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+
+      .param-val-box {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .num-input {
+        width: 68px;
+        height: 28px;
+        background-color: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 13px;
+        font-weight: 600;
+        text-align: right;
+        padding: 0 6px;
+        outline: none;
+        transition: border-color 0.2s ease;
+      }
+
+      .num-input:focus {
+        border-color: var(--border-focus);
+      }
+
+      .unit-label {
+        font-size: 11px;
+        font-family: var(--font-mono);
+        color: var(--text-muted);
+        min-width: 22px;
+      }
+
+      .slider-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      input[type="range"] {
+        flex: 1;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 6px;
+        border-radius: 3px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        outline: none;
+        cursor: pointer;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--accent-bambu);
+        cursor: pointer;
+        box-shadow: 0 0 6px rgba(0, 174, 66, 0.5);
+        transition: transform 0.1s ease;
+      }
+
+      input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.15);
+      }
+
+      /* Step buttons */
+      .step-btn {
+        width: 24px;
+        height: 24px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 13px;
+        font-family: var(--font-mono);
+        font-weight: bold;
+        transition: all 0.15s ease;
+      }
+      .step-btn:hover {
+        background: var(--bg-surface-hover);
+        color: var(--text-primary);
+        border-color: var(--border-focus);
+      }
+
+      /* COMPARTMENTS SUMMARY */
+      .compartments-info-box {
+        background-color: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 12px;
+      }
+
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .info-label {
+        color: var(--text-secondary);
+      }
+
+      .info-val {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      /* MATERIAL ESTIMATION CARD */
+      .stats-card {
+        background: linear-gradient(145deg, var(--bg-surface) 0%, rgba(0, 174, 66, 0.08) 100%);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .stats-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .stats-badge-main {
+        font-size: 20px;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        color: var(--accent-bambu);
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+      }
+
+      .stats-badge-sub {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding-top: 6px;
+        border-top: 1px solid var(--border-color);
+      }
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .stat-label {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      .stat-value {
+        font-size: 13px;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      /* EXPORT PANEL */
+      .panel-footer {
+        padding: 16px 20px;
+        background-color: var(--bg-panel);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .export-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .format-select {
+        height: 42px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 0 10px;
+        outline: none;
+        cursor: pointer;
+      }
+
+      .btn-export {
+        flex: 1;
+        height: 44px;
+        background: linear-gradient(135deg, #00ae42 0%, #059669 100%);
+        border: none;
+        border-radius: 8px;
+        color: #ffffff;
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(0, 174, 66, 0.4);
+        transition: all 0.2s ease;
+      }
+
+      .btn-export:hover {
+        background: linear-gradient(135deg, #00c34a 0%, #10b981 100%);
+        box-shadow: 0 6px 20px rgba(0, 174, 66, 0.6);
+        transform: translateY(-1px);
+      }
+
+      .btn-export:active {
+        transform: translateY(1px);
+      }
+
+      .filename-preview {
+        font-size: 11px;
+        font-family: var(--font-mono);
+        color: var(--text-muted);
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* RIGHT 3D VIEWPORT */
+      .viewport-container {
+        flex: 1;
+        position: relative;
+        background-color: var(--bg-main);
+        overflow: hidden;
+      }
+
+      #webgl-canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        outline: none;
+      }
+
+      /* VIEWPORT FLOATING TOOLBAR */
+      .viewport-toolbar {
+        position: absolute;
+        top: 16px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 4px;
+        z-index: 20;
+      }
+
+      body.light-theme .viewport-toolbar {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .toolbar-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+      }
+
+      .toolbar-btn:hover {
+        background: var(--bg-surface-hover);
+        color: var(--text-primary);
+      }
+
+      .toolbar-btn.active {
+        background: var(--accent-bambu);
+        color: #ffffff;
+      }
+
+      .toolbar-divider {
+        width: 1px;
+        height: 20px;
+        background: var(--border-color);
+      }
+
+      /* FILAMENT COLOR PICKER FLOATING */
+      .color-picker-bar {
+        position: absolute;
+        top: 16px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 5px 10px;
+        z-index: 20;
+      }
+
+      body.light-theme .color-picker-bar {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .color-dot {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: transform 0.15s ease, border-color 0.15s ease;
+      }
+
+      .color-dot:hover {
+        transform: scale(1.2);
+      }
+
+      .color-dot.active {
+        border-color: #ffffff;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+      }
+
+      /* VIEWPORT BOTTOM HELPER HUD */
+      .viewport-bottom-hud {
+        position: absolute;
+        bottom: 16px;
+        left: 20px;
+        right: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        pointer-events: none;
+        z-index: 20;
+      }
+
+      .hud-pill {
+        pointer-events: auto;
+        background: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 6px 12px;
+        font-size: 11px;
+        font-family: var(--font-mono);
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      body.light-theme .hud-pill {
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .hud-pill .dot-pulse {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--accent-bambu);
+        box-shadow: 0 0 6px rgba(0, 174, 66, 0.8);
+      }
+
+      /* TOAST NOTIFICATION */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: #10b981;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 13px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 100;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">
+            Parametric 3D Box Generator
+            <span class="brand-tag">Bambu Studio STL</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <!-- Live Bambu Bed Fit Badge -->
+        <div id="bambu-status-badge" class="bambu-status-badge fit">
+          <svg id="badge-icon-fit" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"/>
+          </svg>
+          <svg id="badge-icon-warn" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          <span id="badge-text">Fits Bambu Build Plate (256mm max)</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Theme Toggle -->
+        <button id="theme-toggle-btn" class="btn-icon" title="Toggle Dark/Light Mode">
+          <svg id="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+          <svg id="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path>
+            <path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path>
+            <path d="m19.07 4.93-1.41 1.41"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- APP MAIN BODY -->
+    <div class="app-main">
+      <!-- LEFT CONTROL PANEL -->
+      <aside class="control-panel">
+        <div class="control-scroll">
+          
+          <!-- QUICK PRESETS -->
+          <div class="control-section">
+            <div class="section-header">
+              <span class="section-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Quick Presets
+              </span>
+            </div>
+            <div class="presets-grid">
+              <button class="preset-chip" onclick="applyPreset(100, 100, 40, 2, 2, 2.0, 2.0, 3.0, 1.6)">Standard 2×2</button>
+              <button class="preset-chip" onclick="applyPreset(120, 120, 35, 3, 3, 2.0, 2.0, 3.0, 1.6)">Small Parts 3×3</button>
+              <button class="preset-chip" onclick="applyPreset(80, 140, 60, 1, 1, 2.4, 2.4, 4.0, 1.6)">Deep Single Bin</button>
+              <button class="preset-chip" onclick="applyPreset(180, 90, 30, 4, 1, 2.0, 2.0, 3.0, 1.6)">Long Tray 4×1</button>
+              <button class="preset-chip" onclick="applyPreset(160, 120, 45, 4, 3, 2.0, 2.0, 3.0, 1.6)">Hardware 4×3</button>
+              <button class="preset-chip" onclick="applyPreset(250, 250, 70, 4, 4, 2.4, 2.4, 6.0, 2.0)">Max Bambu 4×4</button>
+            </div>
+          </div>
+
+          <!-- 1. OUTER DIMENSIONS -->
+          <div class="control-section">
+            <div class="section-header">
+              <span class="section-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                1. Outer Dimensions
+              </span>
+            </div>
+
+            <!-- Length (X) -->
+            <div class="param-group">
+              <div class="param-label-row">
+                <span class="param-name">
+                  <span class="axis-tag axis-x">X</span>
+                  Length
+                </span>
+                <div class="param-val-box">
+                  <input type="number" id="input-length" class="num-input" value="100" min="20" max="280" step="1">
+                  <span class="unit-label">mm</span>
+                </div>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" onclick="stepParam('length', -5)">-</button>
+                <input type="range" id="range-length" min="20" max="280" step="1" value="100">
+                <button class="step-btn" onclick="stepParam('length', 5)">+</button>
+              </div>
+            </div>
+
+            <!-- Width (Y) -->
+            <div class="param-group">
+              <div class="param-label-row">
+                <span class="param-name">
+                  <span class="axis-tag axis-y">Y</span>
+                  Width
+                </span>
+                <div class="param-val-box">
+                  <input type="number" id="input-width" class="num-input" value="100" min="20" max="280" step="1">
+                  <span class="unit-label">mm</span>
+                </div>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" onclick="stepParam('width', -5)">-</button>
+                <input type="range" id="range-width" min="20" max="280" step="1" value="100">
+                <button class="step-btn" onclick="stepParam('width', 5)">+</button>
+              </div>
+            </div>
+
+            <!-- Height (Z) -->
+            <div class="param-group">
+              <div class="param-label-row">
+                <span class="param-name">
+                  <span class="axis-tag axis-z">Z</span>
+                  Height
+                </span>
+                <div class="param-val-box">
+                  <input type="number" id="input-height" class="num-input" value="40" min="10" max="280" step="1">
+                  <span class="unit-label">mm</span>
+                </div>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" onclick="stepParam('height', -5)">-</button>
+                <input type="range" id="range-height" min="10" max="280" step="1" value="40">
+                <button class="step-btn" onclick="stepParam('height', 5)">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. WALL & SHELL PARAMETERS -->
+          <div class="control-section">
+            <div class="section-header">
+              <span class="section-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="3" y1="9" x2="21" y2="9"></line>
+                  <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+                2. Wall & Shell
+              </span>
+            </div>
+
+            <!-- Wall Thickness -->
+            <div class="param-group">
+              <div class="param-label-row">
+                <span class="param-name">Outer Wall Thickness</span>
+                <div class="param-val-box">
+                  <input type="number" id="input-wall" class="num-input" value="2.0" min="1.0" max="5.0" step="0.4">
+                  <span class="unit-label">mm</span>
+                </div>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" onclick="stepParam('wall', -0.4)">-</button>
+                <input type="range" id="range-wall" min="1.0" max="5.0" step="0.4" value="2.0">
+                <button class="step-btn" onclick="stepParam('wall', 0.4)">+</button>
+              </div>
+            </div>
+
+            <!-- Bottom Thickness -->
+            <div class="param-group">
+              <div class="param-label-row">
+                <span class="param-name">Bottom Thickness</span>
+                <div class="param-val-box">
+                  <input type="number" id="input-bottom" class="num-input" value="2.0" min="1.0" max="5.0" step="0.4">
+                  <span class="unit-label">mm</span>
+                </div>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" onclick="stepParam('bottom', -0.4)">-</button>
+                <input type="range" id="range-bottom" min="1.0" max="5.0" step="0.4" value="2.0">
+                <button class="step-btn" onclick="stepParam('bottom', 0.4)">+</button>
+              </div>
+            </div>
+
+            <!-- External Corner Fillet -->
+            <div class="param-group">
+              <div class="param-label-row">
+                <span class="param-name">Corner Fillet / Rounding</span>
+                <div class="param-val-box">
+                  <input type="number" id="input-fillet" class="num-input" value="3.0" min="0" max="15.0" step="0.5">
+                  <span class="unit-label">mm</span>
+                </div>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" onclick="stepParam('fillet', -0.5)">-</button>
+                <input type="range" id="range-fillet" min="0" max="15.0" step="0.5" value="3.0">
+                <button class="step-btn" onclick="stepParam('fillet', 0.5)">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. COMPARTMENTS & DIVIDERS -->
+          <div class="control-section">
+            <div class="section-header">
+              <span class="section-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="18" height="18" x="3" y="3" rx="2"/>
+                  <path d="M3 9h18"/>
+                  <path d="M3 15h18"/>
+                  <path d="M9 3v18"/>
+                  <path d="M15 3v18"/>
+                </svg>
+                3. Compartments / Dividers
+              </span>
+            </div>
+
+            <!-- Columns (X) -->
+            <div class="param-group">
+              <div class="param-label-row">
+                <span class="param-name">Columns (X count)</span>
+                <div class="param-val-box">
+                  <input type="number" id="input-cols" class="num-input" value="2" min="1" max="10" step="1">
+                  <span class="unit-label">col</span>
+                </div>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" onclick="stepParam('cols', -1)">-</button>
+                <input type="range" id="range-cols" min="1" max="10" step="1" value="2">
+                <button class="step-btn" onclick="stepParam('cols', 1)">+</button>
+              </div>
+            </div>
+
+            <!-- Rows (Y) -->
+            <div class="param-group">
+              <div class="param-label-row">
+                <span class="param-name">Rows (Y count)</span>
+                <div class="param-val-box">
+                  <input type="number" id="input-rows" class="num-input" value="2" min="1" max="10" step="1">
+                  <span class="unit-label">row</span>
+                </div>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" onclick="stepParam('rows', -1)">-</button>
+                <input type="range" id="range-rows" min="1" max="10" step="1" value="2">
+                <button class="step-btn" onclick="stepParam('rows', 1)">+</button>
+              </div>
+            </div>
+
+            <!-- Divider Wall Thickness -->
+            <div class="param-group">
+              <div class="param-label-row">
+                <span class="param-name">Divider Wall Thickness</span>
+                <div class="param-val-box">
+                  <input type="number" id="input-divider" class="num-input" value="1.6" min="1.0" max="4.0" step="0.2">
+                  <span class="unit-label">mm</span>
+                </div>
+              </div>
+              <div class="slider-row">
+                <button class="step-btn" onclick="stepParam('divider', -0.2)">-</button>
+                <input type="range" id="range-divider" min="1.0" max="4.0" step="0.2" value="1.6">
+                <button class="step-btn" onclick="stepParam('divider', 0.2)">+</button>
+              </div>
+            </div>
+
+            <!-- Compartment Dimension Readout -->
+            <div class="compartments-info-box">
+              <div class="info-row">
+                <span class="info-label">Total Compartments:</span>
+                <span id="readout-total-cells" class="info-val">4 cells (2 × 2)</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Each Compartment (Int):</span>
+                <span id="readout-cell-size" class="info-val">46.8 × 46.8 × 38.0 mm</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. MATERIAL & SLICER ESTIMATE -->
+          <div class="stats-card">
+            <div class="stats-header">
+              <div>
+                <div class="stat-label">Estimated PLA Filament</div>
+                <div id="stat-weight-hero" class="stats-badge-main">~75.7 g</div>
+              </div>
+              <div class="stats-badge-sub" title="Standard PLA density">
+                1.24 g/cm³
+              </div>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-label">Solid Volume</span>
+                <span id="stat-volume" class="stat-value">61.06 cm³</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Filament Length (1.75mm)</span>
+                <span id="stat-length" class="stat-value">~25.4 m</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Estimated Print Time</span>
+                <span id="stat-time" class="stat-value">~3h 15m</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Estimated Spool Cost</span>
+                <span id="stat-cost" class="stat-value">~$1.51 (@$20/kg)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PANEL FOOTER / EXPORT ACTIONS -->
+        <div class="panel-footer">
+          <div class="export-row">
+            <select id="export-format" class="format-select" title="STL Format">
+              <option value="binary" selected>Binary STL (Compact)</option>
+              <option value="ascii">ASCII STL (Text)</option>
+            </select>
+            <button id="btn-export-stl" class="btn-export" onclick="exportSTL()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Export STL
+            </button>
+          </div>
+          <div id="filename-preview" class="filename-preview">
+            Box_100x100x40_2x2.stl
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT 3D VIEWPORT -->
+      <main class="viewport-container">
+        <!-- 3D Canvas -->
+        <canvas id="webgl-canvas"></canvas>
+
+        <!-- FLOATING TOP TOOLBAR -->
+        <div class="viewport-toolbar">
+          <button class="toolbar-btn" onclick="setCameraView('iso')" title="Isometric 3D View">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            Iso
+          </button>
+          <button class="toolbar-btn" onclick="setCameraView('top')" title="Top View (Z)">
+            Top
+          </button>
+          <button class="toolbar-btn" onclick="setCameraView('front')" title="Front View (Y)">
+            Front
+          </button>
+          <button class="toolbar-btn" onclick="setCameraView('side')" title="Side View (X)">
+            Side
+          </button>
+          <button class="toolbar-btn" onclick="resetCamera()" title="Reset Camera">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Reset
+          </button>
+
+          <div class="toolbar-divider"></div>
+
+          <!-- Solid / Wireframe Toggle -->
+          <button id="btn-wireframe-toggle" class="toolbar-btn" onclick="toggleWireframe()" title="Toggle Solid / Wireframe">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            <span id="wireframe-label">Solid</span>
+          </button>
+
+          <!-- Build Plate Toggle -->
+          <button id="btn-plate-toggle" class="toolbar-btn active" onclick="toggleBuildPlate()" title="Show/Hide Bambu Build Plate">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="3"/></svg>
+            Bed (256mm)
+          </button>
+
+          <!-- Auto-Rotate -->
+          <button id="btn-autorotate-toggle" class="toolbar-btn" onclick="toggleAutoRotate()" title="Turntable Spin">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            Spin
+          </button>
+        </div>
+
+        <!-- FILAMENT COLOR SWATCHES -->
+        <div class="color-picker-bar">
+          <div class="color-dot active" style="background-color: #00ae42;" onclick="setFilamentColor('#00ae42', this)" title="Bambu Jade Green"></div>
+          <div class="color-dot" style="background-color: #1e293b;" onclick="setFilamentColor('#1e293b', this)" title="Bambu Matte Charcoal"></div>
+          <div class="color-dot" style="background-color: #f8fafc;" onclick="setFilamentColor('#f8fafc', this)" title="Bambu Arctic White"></div>
+          <div class="color-dot" style="background-color: #ea580c;" onclick="setFilamentColor('#ea580c', this)" title="Bambu Signal Orange"></div>
+          <div class="color-dot" style="background-color: #0284c7;" onclick="setFilamentColor('#0284c7', this)" title="Bambu Silk Blue"></div>
+          <div class="color-dot" style="background-color: #d97706;" onclick="setFilamentColor('#d97706', this)" title="Bambu Gold / Bronze"></div>
+        </div>
+
+        <!-- VIEWPORT BOTTOM HUD -->
+        <div class="viewport-bottom-hud">
+          <div class="hud-pill">
+            <span class="dot-pulse"></span>
+            <span>Watertight 2-Manifold Mesh</span>
+            <span style="opacity: 0.5;">·</span>
+            <span id="triangles-count">0 Triangles</span>
+          </div>
+
+          <div class="hud-pill">
+            <span>Rotate: Left Click · Pan: Right Click · Zoom: Wheel</span>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      <span id="toast-message">Exported STL successfully!</span>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+      // ==========================================
+      // PARAMETRIC STATE & CONFIGURATION
+      // ==========================================
+      const state = {
+        length: 100,        // mm (X axis)
+        width: 100,         // mm (Y axis)
+        height: 40,         // mm (Z axis)
+        wallThickness: 2.0, // mm
+        bottomThickness: 2.0, // mm
+        fillet: 3.0,        // mm
+        cols: 2,            // Columns (X count)
+        rows: 2,            // Rows (Y count)
+        dividerThickness: 1.6, // mm
+        // Viewport settings
+        isWireframe: false,
+        showBuildPlate: true,
+        autoRotate: false,
+        filamentColor: '#00ae42',
+        theme: 'dark'
+      };
+
+      // Bambu Lab build plate size limit
+      const BAMBU_LIMIT = 256; // mm
+
+      // ==========================================
+      // THREE.JS VIEWPORT SETUP
+      // ==========================================
+      let scene, camera, renderer, controls;
+      let boxMesh = null;
+      let buildPlateGroup = null;
+      let dimensionGroup = null;
+      let material = null;
+      let canvas = null;
+
+      function initThree() {
+        canvas = document.getElementById('webgl-canvas');
+        const container = canvas.parentElement;
+
+        // Create Scene
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(state.theme === 'dark' ? 0x0b0f19 : 0xf1f5f9);
+
+        // Standard 3D CAD coordinate system: Z is UP!
+        // In Bambu Studio and 3D printing, Z is the build height
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 3000);
+        camera.up.set(0, 0, 1);
+        camera.position.set(190, -210, 160);
+
+        // Renderer
+        renderer = new THREE.WebGLRenderer({
+          canvas: canvas,
+          antialias: true,
+          powerPreference: 'high-performance'
+        });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        // OrbitControls
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.target.set(0, 0, 20);
+        controls.maxDistance = 1200;
+        controls.minDistance = 20;
+        // Allow looking slightly from below build plate, but clamp
+        controls.maxPolarAngle = Math.PI / 2 + 0.15;
+
+        // Studio Lighting
+        setupLighting();
+
+        // Build Plate (Bambu Lab 256 x 256 mm)
+        createBambuBuildPlate();
+
+        // Material for 3D Box (PBR PLA finish)
+        material = new THREE.MeshStandardMaterial({
+          color: new THREE.Color(state.filamentColor),
+          roughness: 0.35,
+          metalness: 0.05,
+          wireframe: state.isWireframe,
+          side: THREE.DoubleSide
+        });
+
+        // Initial Geometry Generation
+        updateMesh();
+
+        // Responsive resize
+        window.addEventListener('resize', onWindowResize);
+
+        // Start render loop
+        animate();
+      }
+
+      function setupLighting() {
+        // Soft Ambient Light
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+        scene.add(ambientLight);
+
+        // Key Light (warm directional light with shadows)
+        const keyLight = new THREE.DirectionalLight(0xfffaed, 0.85);
+        keyLight.position.set(160, -180, 260);
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.width = 2048;
+        keyLight.shadow.mapSize.height = 2048;
+        keyLight.shadow.camera.near = 10;
+        keyLight.shadow.camera.far = 800;
+        const d = 180;
+        keyLight.shadow.camera.left = -d;
+        keyLight.shadow.camera.right = d;
+        keyLight.shadow.camera.top = d;
+        keyLight.shadow.camera.bottom = -d;
+        keyLight.shadow.bias = -0.0005;
+        scene.add(keyLight);
+
+        // Fill Light (soft cool light from opposite side)
+        const fillLight = new THREE.DirectionalLight(0xe0f2fe, 0.45);
+        fillLight.position.set(-180, 150, 180);
+        scene.add(fillLight);
+
+        // Rim / Back Light
+        const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
+        rimLight.position.set(0, 200, 80);
+        scene.add(rimLight);
+      }
+
+      // ==========================================
+      // BAMBU LAB 256 x 256 BUILD PLATE
+      // ==========================================
+      function createBambuBuildPlate() {
+        buildPlateGroup = new THREE.Group();
+
+        const plateSize = 256;
+        const plateColor = state.theme === 'dark' ? 0x161e2e : 0xe2e8f0;
+        const gridColorMajor = state.theme === 'dark' ? 0x334155 : 0xcfd8dc;
+        const gridColorMinor = state.theme === 'dark' ? 0x1e293b : 0xe2e8f0;
+
+        // 1. Solid Bed Base Plate (Textured PEI look)
+        const bedGeom = new THREE.BoxGeometry(plateSize, plateSize, 1.5);
+        const bedMat = new THREE.MeshStandardMaterial({
+          color: plateColor,
+          roughness: 0.8,
+          metalness: 0.2
+        });
+        const bedMesh = new THREE.Mesh(bedGeom, bedMat);
+        bedMesh.position.set(0, 0, -0.75);
+        bedMesh.receiveShadow = true;
+        buildPlateGroup.add(bedMesh);
+
+        // 2. Build Plate Border Line (256x256 mm Printable Boundary)
+        const borderGeom = new THREE.BufferGeometry();
+        const half = plateSize / 2;
+        const borderVertices = new Float32Array([
+          -half, -half, 0.05,   half, -half, 0.05,
+           half, -half, 0.05,   half,  half, 0.05,
+           half,  half, 0.05,  -half,  half, 0.05,
+          -half,  half, 0.05,  -half, -half, 0.05
+        ]);
+        borderGeom.setAttribute('position', new THREE.BufferAttribute(borderVertices, 3));
+        const borderMat = new THREE.LineBasicMaterial({
+          color: 0x00ae42, // Bambu green boundary
+          linewidth: 2
+        });
+        const borderLine = new THREE.LineSegments(borderGeom, borderMat);
+        buildPlateGroup.add(borderLine);
+
+        // 3. Grid Lines (10mm minor, 50mm major)
+        const gridLinesGeom = new THREE.BufferGeometry();
+        const gridMajorGeom = new THREE.BufferGeometry();
+        const minorVerts = [];
+        const majorVerts = [];
+
+        for (let x = -half + 10; x < half; x += 10) {
+          if (x === 0) continue;
+          const isMajor = Math.round(x) % 50 === 0;
+          const target = isMajor ? majorVerts : minorVerts;
+          target.push(x, -half, 0.02, x, half, 0.02);
+        }
+        for (let y = -half + 10; y < half; y += 10) {
+          if (y === 0) continue;
+          const isMajor = Math.round(y) % 50 === 0;
+          const target = isMajor ? majorVerts : minorVerts;
+          target.push(-half, y, 0.02, half, y, 0.02);
+        }
+
+        // Center Origin Crosshair (X red, Y green)
+        const axisLength = 20;
+        const axisGeom = new THREE.BufferGeometry();
+        const axisVerts = new Float32Array([
+          0, 0, 0.06,  axisLength, 0, 0.06,  // X (Red)
+          0, 0, 0.06,  0, axisLength, 0.06   // Y (Green)
+        ]);
+        axisGeom.setAttribute('position', new THREE.BufferAttribute(axisVerts, 3));
+
+        if (minorVerts.length > 0) {
+          gridLinesGeom.setAttribute('position', new THREE.Float32BufferAttribute(minorVerts, 3));
+          const minorMat = new THREE.LineBasicMaterial({ color: gridColorMinor });
+          buildPlateGroup.add(new THREE.LineSegments(gridLinesGeom, minorMat));
+        }
+
+        if (majorVerts.length > 0) {
+          gridMajorGeom.setAttribute('position', new THREE.Float32BufferAttribute(majorVerts, 3));
+          const majorMat = new THREE.LineBasicMaterial({ color: gridColorMajor });
+          buildPlateGroup.add(new THREE.LineSegments(gridMajorGeom, majorMat));
+        }
+
+        // Center axis lines
+        const centerLines = new THREE.LineSegments(axisGeom, new THREE.LineBasicMaterial({ color: 0xef4444 }));
+        buildPlateGroup.add(centerLines);
+
+        scene.add(buildPlateGroup);
+      }
+
+      // ==========================================
+      // WATERTIGHT 2-MANIFOLD GEOMETRY GENERATION
+      // ==========================================
+      function generateBoxGeometry(params) {
+        const { length, width, height, wallThickness, bottomThickness, fillet, cols, rows, dividerThickness } = params;
+
+        const L = Math.max(20, length);
+        const W = Math.max(20, width);
+        const H = Math.max(10, height);
+        const tw = Math.max(0.8, wallThickness);
+        const tb = Math.min(Math.max(0.8, bottomThickness), H - 1.0);
+        const td = Math.max(0.8, dividerThickness);
+        const C = Math.max(1, Math.min(20, Math.floor(cols)));
+        const R_count = Math.max(1, Math.min(20, Math.floor(rows)));
+
+        // Max fillet check
+        const maxFillet = Math.max(0, Math.min(fillet, L / 2 - 0.5, W / 2 - 0.5, 20));
+        const R = Math.max(0, maxFillet);
+
+        // Internal available span
+        const availX = L - 2 * tw - (C - 1) * td;
+        const availY = W - 2 * tw - (R_count - 1) * td;
+
+        if (availX <= 1 || availY <= 1) {
+          // Safe fallback if wall thicknesses exceed box
+          return new THREE.BoxGeometry(L, W, H);
+        }
+
+        const cellW = availX / C;
+        const cellH = availY / R_count;
+
+        const hx = L / 2;
+        const hy = W / 2;
+
+        // 1. Build Outer Contour in CCW (Counter-Clockwise) order
+        const outerPoints = [];
+        const arcSegments = R > 0.05 ? 8 : 1;
+
+        if (R > 0.05) {
+          // Corner 1: Bottom-Right (center: hx - R, -hy + R), angle -PI/2 to 0
+          const cx1 = hx - R, cy1 = -hy + R;
+          for (let i = 0; i <= arcSegments; i++) {
+            const angle = -Math.PI / 2 + (i / arcSegments) * (Math.PI / 2);
+            outerPoints.push(new THREE.Vector2(cx1 + R * Math.cos(angle), cy1 + R * Math.sin(angle)));
+          }
+          // Corner 2: Top-Right (center: hx - R, hy - R), angle 0 to PI/2
+          const cx2 = hx - R, cy2 = hy - R;
+          for (let i = 1; i <= arcSegments; i++) {
+            const angle = (i / arcSegments) * (Math.PI / 2);
+            outerPoints.push(new THREE.Vector2(cx2 + R * Math.cos(angle), cy2 + R * Math.sin(angle)));
+          }
+          // Corner 3: Top-Left (center: -hx + R, hy - R), angle PI/2 to PI
+          const cx3 = -hx + R, cy3 = hy - R;
+          for (let i = 1; i <= arcSegments; i++) {
+            const angle = Math.PI / 2 + (i / arcSegments) * (Math.PI / 2);
+            outerPoints.push(new THREE.Vector2(cx3 + R * Math.cos(angle), cy3 + R * Math.sin(angle)));
+          }
+          // Corner 4: Bottom-Left (center: -hx + R, -hy + R), angle PI to 3*PI/2
+          const cx4 = -hx + R, cy4 = -hy + R;
+          for (let i = 1; i < arcSegments; i++) {
+            const angle = Math.PI + (i / arcSegments) * (Math.PI / 2);
+            outerPoints.push(new THREE.Vector2(cx4 + R * Math.cos(angle), cy4 + R * Math.sin(angle)));
+          }
+        } else {
+          // Sharp rectangle (CCW)
+          outerPoints.push(new THREE.Vector2(hx, -hy));
+          outerPoints.push(new THREE.Vector2(hx, hy));
+          outerPoints.push(new THREE.Vector2(-hx, hy));
+          outerPoints.push(new THREE.Vector2(-hx, -hy));
+        }
+
+        // 2. Build Pockets
+        const pockets = [];
+        for (let c = 0; c < C; c++) {
+          for (let r = 0; r < R_count; r++) {
+            const px0 = -hx + tw + c * (cellW + td);
+            const px1 = px0 + cellW;
+            const py0 = -hy + tw + r * (cellH + td);
+            const py1 = py0 + cellH;
+
+            // CCW points for inner walls & floor
+            const ccw = [
+              new THREE.Vector2(px0, py0),
+              new THREE.Vector2(px1, py0),
+              new THREE.Vector2(px1, py1),
+              new THREE.Vector2(px0, py1)
+            ];
+
+            // CW points for top rim hole triangulation (Earcut requires clockwise holes)
+            const cw = [
+              new THREE.Vector2(px0, py0),
+              new THREE.Vector2(px0, py1),
+              new THREE.Vector2(px1, py1),
+              new THREE.Vector2(px1, py0)
+            ];
+
+            pockets.push({ px0, px1, py0, py1, ccw, cw });
+          }
+        }
+
+        // Array to collect 3D triangle vertex positions
+        const positions = [];
+
+        function addTriangle(p1, p2, p3) {
+          positions.push(p1.x, p1.y, p1.z);
+          positions.push(p2.x, p2.y, p2.z);
+          positions.push(p3.x, p3.y, p3.z);
+        }
+
+        // 3. BOTTOM FACE (at Z = 0)
+        // Outer contour triangulated, facing DOWN (normal = -Z)
+        const bottomTris = THREE.ShapeUtils.triangulateShape(outerPoints, []);
+        for (const tri of bottomTris) {
+          // Flip winding (0, 2, 1) so normal points -Z
+          const v0 = { x: outerPoints[tri[0]].x, y: outerPoints[tri[0]].y, z: 0 };
+          const v1 = { x: outerPoints[tri[2]].x, y: outerPoints[tri[2]].y, z: 0 };
+          const v2 = { x: outerPoints[tri[1]].x, y: outerPoints[tri[1]].y, z: 0 };
+          addTriangle(v0, v1, v2);
+        }
+
+        // 4. OUTER SIDE WALLS (Z = 0 to Z = H)
+        // Normal pointing OUTWARD
+        const numOuter = outerPoints.length;
+        for (let i = 0; i < numOuter; i++) {
+          const next = (i + 1) % numOuter;
+          const pA = outerPoints[i];
+          const pB = outerPoints[next];
+
+          const A0 = { x: pA.x, y: pA.y, z: 0 };
+          const B0 = { x: pB.x, y: pB.y, z: 0 };
+          const A1 = { x: pA.x, y: pA.y, z: H };
+          const B1 = { x: pB.x, y: pB.y, z: H };
+
+          addTriangle(A0, B0, B1);
+          addTriangle(A0, B1, A1);
+        }
+
+        // 5. TOP RIM (at Z = H)
+        // Triangulate outer contour with pocket holes
+        const holePaths = pockets.map(p => p.cw);
+        const topTris = THREE.ShapeUtils.triangulateShape(outerPoints, holePaths);
+
+        const allTopPoints = [...outerPoints];
+        for (const p of pockets) {
+          allTopPoints.push(...p.cw);
+        }
+
+        for (const tri of topTris) {
+          // Normal points UP (+Z)
+          const v0 = { x: allTopPoints[tri[0]].x, y: allTopPoints[tri[0]].y, z: H };
+          const v1 = { x: allTopPoints[tri[1]].x, y: allTopPoints[tri[1]].y, z: H };
+          const v2 = { x: allTopPoints[tri[2]].x, y: allTopPoints[tri[2]].y, z: H };
+          addTriangle(v0, v1, v2);
+        }
+
+        // 6. POCKET FLOORS (at Z = tb) & INNER WALLS (Z = tb to Z = H)
+        for (const p of pockets) {
+          // Floor of pocket at Z = tb, normal facing UP (+Z)
+          const f0 = { x: p.ccw[0].x, y: p.ccw[0].y, z: tb };
+          const f1 = { x: p.ccw[1].x, y: p.ccw[1].y, z: tb };
+          const f2 = { x: p.ccw[2].x, y: p.ccw[2].y, z: tb };
+          const f3 = { x: p.ccw[3].x, y: p.ccw[3].y, z: tb };
+
+          addTriangle(f0, f1, f2);
+          addTriangle(f0, f2, f3);
+
+          // Inner side walls, normal facing INWARD (into pocket)
+          for (let i = 0; i < 4; i++) {
+            const next = (i + 1) % 4;
+            const pA = p.ccw[i];
+            const pB = p.ccw[next];
+
+            const wA0 = { x: pA.x, y: pA.y, z: tb };
+            const wB0 = { x: pB.x, y: pB.y, z: tb };
+            const wA1 = { x: pA.x, y: pA.y, z: H };
+            const wB1 = { x: pB.x, y: pB.y, z: H };
+
+            addTriangle(wA0, wA1, wB1);
+            addTriangle(wA0, wB1, wB0);
+          }
+        }
+
+        // Create BufferGeometry
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.computeVertexNormals();
+        return geometry;
+      }
+
+      // ==========================================
+      // MESH UPDATE & REAL-TIME STATS
+      // ==========================================
+      let updateQueued = false;
+
+      function requestMeshUpdate() {
+        if (!updateQueued) {
+          updateQueued = true;
+          requestAnimationFrame(() => {
+            updateMesh();
+            updateQueued = false;
+          });
+        }
+      }
+
+      function updateMesh() {
+        if (!scene) return;
+
+        // 1. Remove existing mesh
+        if (boxMesh) {
+          scene.remove(boxMesh);
+          if (boxMesh.geometry) boxMesh.geometry.dispose();
+        }
+
+        // 2. Build new watertight geometry
+        const geom = generateBoxGeometry(state);
+
+        // 3. Create mesh with cast/receive shadow
+        boxMesh = new THREE.Mesh(geom, material);
+        boxMesh.castShadow = true;
+        boxMesh.receiveShadow = true;
+        scene.add(boxMesh);
+
+        // 4. Update UI calculations & warnings
+        updateCalculations();
+        updateBambuLimitCheck();
+        updateFilenamePreview();
+
+        // 5. Update triangle count badge
+        const triCount = geom.attributes.position.count / 3;
+        document.getElementById('triangles-count').textContent = `${triCount.toLocaleString()} Triangles`;
+      }
+
+      // Real-time Material & Volumetric Estimation
+      function updateCalculations() {
+        const { length, width, height, wallThickness, bottomThickness, fillet, cols, rows, dividerThickness } = state;
+
+        const L = length;
+        const W = width;
+        const H = height;
+        const tw = wallThickness;
+        const tb = bottomThickness;
+        const td = dividerThickness;
+        const C = cols;
+        const R_count = rows;
+        const R = Math.min(fillet, L / 2 - 0.5, W / 2 - 0.5);
+
+        // Outer Area with 4 corner fillets
+        // Area of standard rectangle = L * W; each corner removes (R^2 - pi*R^2/4)
+        const cornerCutout = (4 - Math.PI) * (R * R);
+        const outerArea = Math.max(0, (L * W) - cornerCutout);
+        const outerVolume = outerArea * H; // mm^3
+
+        // Compartments
+        const availX = Math.max(0, L - 2 * tw - (C - 1) * td);
+        const availY = Math.max(0, W - 2 * tw - (R_count - 1) * td);
+        const cellW = availX / C;
+        const cellH = availY / R_count;
+        const cellDepth = Math.max(0, H - tb);
+
+        const pocketVolume = cellW * cellH * cellDepth;
+        const totalPocketsVolume = (C * R_count) * pocketVolume;
+
+        // Solid Material Volume
+        const solidVolumeMm3 = Math.max(0, outerVolume - totalPocketsVolume);
+        const solidVolumeCm3 = solidVolumeMm3 / 1000.0;
+
+        // PLA density: ~1.24 g/cm³
+        const plaDensity = 1.24;
+        const estWeightGrams = solidVolumeCm3 * plaDensity;
+
+        // Filament length (1.75mm diameter: cross section area = pi * (1.75/2)^2 = 2.405 mm^2)
+        const filamentArea = Math.PI * Math.pow(1.75 / 2, 2);
+        const filamentLengthMeters = (solidVolumeMm3 / filamentArea) / 1000.0;
+
+        // Estimated Print Time (Bambu standard ~20g/hr)
+        const estPrintMinutes = Math.round((estWeightGrams / 22.0) * 60 + 10);
+        const printHours = Math.floor(estPrintMinutes / 60);
+        const printMins = estPrintMinutes % 60;
+
+        // Filament cost ($20/kg spool -> $0.02/g)
+        const estCost = (estWeightGrams * 0.02).toFixed(2);
+
+        // Update DOM
+        document.getElementById('stat-weight-hero').textContent = `~${estWeightGrams.toFixed(1)} g`;
+        document.getElementById('stat-volume').textContent = `${solidVolumeCm3.toFixed(2)} cm³`;
+        document.getElementById('stat-length').textContent = `~${filamentLengthMeters.toFixed(1)} m`;
+        document.getElementById('stat-time').textContent = `~${printHours}h ${printMins}m`;
+        document.getElementById('stat-cost').textContent = `~$${estCost} (@$20/kg)`;
+
+        // Update Compartment info
+        document.getElementById('readout-total-cells').textContent = `${C * R_count} cells (${C} × ${R_count})`;
+        document.getElementById('readout-cell-size').textContent = `${cellW.toFixed(1)} × ${cellH.toFixed(1)} × ${cellDepth.toFixed(1)} mm`;
+      }
+
+      // Check Bambu Lab 256 x 256 x 256 mm limit
+      function updateBambuLimitCheck() {
+        const badge = document.getElementById('bambu-status-badge');
+        const badgeText = document.getElementById('badge-text');
+        const iconFit = document.getElementById('badge-icon-fit');
+        const iconWarn = document.getElementById('badge-icon-warn');
+
+        const exceeds = state.length > BAMBU_LIMIT || state.width > BAMBU_LIMIT || state.height > BAMBU_LIMIT;
+
+        if (exceeds) {
+          badge.classList.remove('fit');
+          badge.classList.add('exceeded');
+          iconFit.style.display = 'none';
+          iconWarn.style.display = 'inline-block';
+          
+          const maxDim = Math.max(state.length, state.width, state.height);
+          badgeText.textContent = `⚠️ Exceeds Bambu Build Plate (256mm max)`;
+        } else {
+          badge.classList.remove('exceeded');
+          badge.classList.add('fit');
+          iconFit.style.display = 'inline-block';
+          iconWarn.style.display = 'none';
+          badgeText.textContent = `Fits Bambu Build Plate (256mm max)`;
+        }
+      }
+
+      function updateFilenamePreview() {
+        const filename = `Box_${Math.round(state.length)}x${Math.round(state.width)}x${Math.round(state.height)}_${state.cols}x${state.rows}.stl`;
+        document.getElementById('filename-preview').textContent = filename;
+      }
+
+      // ==========================================
+      // UI SYNC & EVENT HANDLERS
+      // ==========================================
+      const paramBindings = [
+        { key: 'length', input: 'input-length', range: 'range-length', isFloat: false },
+        { key: 'width', input: 'input-width', range: 'range-width', isFloat: false },
+        { key: 'height', input: 'input-height', range: 'range-height', isFloat: false },
+        { key: 'wall', keyState: 'wallThickness', input: 'input-wall', range: 'range-wall', isFloat: true },
+        { key: 'bottom', keyState: 'bottomThickness', input: 'input-bottom', range: 'range-bottom', isFloat: true },
+        { key: 'fillet', input: 'input-fillet', range: 'range-fillet', isFloat: true },
+        { key: 'cols', input: 'input-cols', range: 'range-cols', isFloat: false },
+        { key: 'rows', input: 'input-rows', range: 'range-rows', isFloat: false },
+        { key: 'divider', keyState: 'dividerThickness', input: 'input-divider', range: 'range-divider', isFloat: true }
+      ];
+
+      function setupParamListeners() {
+        paramBindings.forEach(binding => {
+          const stateKey = binding.keyState || binding.key;
+          const numInput = document.getElementById(binding.input);
+          const rangeInput = document.getElementById(binding.range);
+
+          if (!numInput || !rangeInput) return;
+
+          // Range slider input
+          rangeInput.addEventListener('input', (e) => {
+            const val = binding.isFloat ? parseFloat(e.target.value) : parseInt(e.target.value, 10);
+            state[stateKey] = val;
+            numInput.value = val;
+            requestMeshUpdate();
+          });
+
+          // Number box input
+          numInput.addEventListener('input', (e) => {
+            const val = binding.isFloat ? parseFloat(e.target.value) : parseInt(e.target.value, 10);
+            if (!isNaN(val)) {
+              state[stateKey] = val;
+              rangeInput.value = val;
+              requestMeshUpdate();
+            }
+          });
+        });
+      }
+
+      function stepParam(paramKey, delta) {
+        const binding = paramBindings.find(b => b.key === paramKey);
+        if (!binding) return;
+
+        const stateKey = binding.keyState || binding.key;
+        const numInput = document.getElementById(binding.input);
+        const rangeInput = document.getElementById(binding.range);
+
+        let current = state[stateKey];
+        let newVal = binding.isFloat ? parseFloat((current + delta).toFixed(2)) : current + delta;
+
+        const min = parseFloat(numInput.min);
+        const max = parseFloat(numInput.max);
+
+        if (newVal < min) newVal = min;
+        if (newVal > max) newVal = max;
+
+        state[stateKey] = newVal;
+        numInput.value = newVal;
+        rangeInput.value = newVal;
+        requestMeshUpdate();
+      }
+
+      function applyPreset(L, W, H, C, R_cnt, Wall, Bot, Fillet, Div) {
+        state.length = L;
+        state.width = W;
+        state.height = H;
+        state.cols = C;
+        state.rows = R_cnt;
+        state.wallThickness = Wall;
+        state.bottomThickness = Bot;
+        state.fillet = Fillet;
+        state.dividerThickness = Div;
+
+        // Sync inputs
+        document.getElementById('input-length').value = L;
+        document.getElementById('range-length').value = L;
+        document.getElementById('input-width').value = W;
+        document.getElementById('range-width').value = W;
+        document.getElementById('input-height').value = H;
+        document.getElementById('range-height').value = H;
+        document.getElementById('input-cols').value = C;
+        document.getElementById('range-cols').value = C;
+        document.getElementById('input-rows').value = R_cnt;
+        document.getElementById('range-rows').value = R_cnt;
+        document.getElementById('input-wall').value = Wall;
+        document.getElementById('range-wall').value = Wall;
+        document.getElementById('input-bottom').value = Bot;
+        document.getElementById('range-bottom').value = Bot;
+        document.getElementById('input-fillet').value = Fillet;
+        document.getElementById('range-fillet').value = Fillet;
+        document.getElementById('input-divider').value = Div;
+        document.getElementById('range-divider').value = Div;
+
+        requestMeshUpdate();
+        showToast(`Applied preset: ${L}×${W}×${H}mm (${C}×${R_cnt})`);
+      }
+
+      // ==========================================
+      // VIEWPORT CONTROLS
+      // ==========================================
+      function setCameraView(view) {
+        const dist = Math.max(state.length, state.width, state.height) * 1.8;
+        controls.target.set(0, 0, state.height / 2);
+
+        switch (view) {
+          case 'iso':
+            camera.position.set(dist * 0.8, -dist * 0.9, dist * 0.7);
+            break;
+          case 'top':
+            camera.position.set(0, 0, dist * 1.6);
+            break;
+          case 'front':
+            camera.position.set(0, -dist * 1.4, state.height / 2);
+            break;
+          case 'side':
+            camera.position.set(dist * 1.4, 0, state.height / 2);
+            break;
+        }
+        controls.update();
+      }
+
+      function resetCamera() {
+        setCameraView('iso');
+      }
+
+      function toggleWireframe() {
+        state.isWireframe = !state.isWireframe;
+        material.wireframe = state.isWireframe;
+        const btn = document.getElementById('btn-wireframe-toggle');
+        const label = document.getElementById('wireframe-label');
+        if (state.isWireframe) {
+          btn.classList.add('active');
+          label.textContent = 'Wireframe';
+        } else {
+          btn.classList.remove('active');
+          label.textContent = 'Solid';
+        }
+      }
+
+      function toggleBuildPlate() {
+        state.showBuildPlate = !state.showBuildPlate;
+        if (buildPlateGroup) {
+          buildPlateGroup.visible = state.showBuildPlate;
+        }
+        const btn = document.getElementById('btn-plate-toggle');
+        btn.classList.toggle('active', state.showBuildPlate);
+      }
+
+      function toggleAutoRotate() {
+        state.autoRotate = !state.autoRotate;
+        controls.autoRotate = state.autoRotate;
+        controls.autoRotateSpeed = 2.0;
+        const btn = document.getElementById('btn-autorotate-toggle');
+        btn.classList.toggle('active', state.autoRotate);
+      }
+
+      function setFilamentColor(hex, dotElem) {
+        state.filamentColor = hex;
+        material.color.set(hex);
+        document.querySelectorAll('.color-dot').forEach(el => el.classList.remove('active'));
+        if (dotElem) dotElem.classList.add('active');
+      }
+
+      // Theme Toggle (Dark/Light)
+      function setupThemeToggle() {
+        const toggleBtn = document.getElementById('theme-toggle-btn');
+        const iconMoon = document.getElementById('theme-icon-moon');
+        const iconSun = document.getElementById('theme-icon-sun');
+
+        toggleBtn.addEventListener('click', () => {
+          const isLight = document.body.classList.toggle('light-theme');
+          state.theme = isLight ? 'light' : 'dark';
+
+          iconMoon.style.display = isLight ? 'none' : 'block';
+          iconSun.style.display = isLight ? 'block' : 'none';
+
+          if (scene) {
+            scene.background.set(isLight ? 0xf1f5f9 : 0x0b0f19);
+          }
+
+          // Rebuild plate colors for theme
+          if (buildPlateGroup) {
+            scene.remove(buildPlateGroup);
+            createBambuBuildPlate();
+          }
+        });
+      }
+
+      function onWindowResize() {
+        if (!camera || !renderer || !canvas) return;
+        const container = canvas.parentElement;
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+
+      // ==========================================
+      // STL EXPORT (BAMBU STUDIO COMPATIBLE)
+      // ==========================================
+      function exportSTL() {
+        if (!boxMesh) return;
+
+        const formatSelect = document.getElementById('export-format');
+        const isBinary = formatSelect ? formatSelect.value === 'binary' : true;
+        const filename = `Box_${Math.round(state.length)}x${Math.round(state.width)}x${Math.round(state.height)}_${state.cols}x${state.rows}.stl`;
+
+        try {
+          let output;
+          if (typeof THREE.STLExporter !== 'undefined') {
+            const exporter = new THREE.STLExporter();
+            output = exporter.parse(boxMesh, { binary: isBinary });
+          } else {
+            // Fallback direct binary STL generator
+            output = exportCustomBinarySTL(boxMesh.geometry);
+          }
+
+          const blob = new Blob([output], {
+            type: isBinary ? 'application/octet-stream' : 'text/plain'
+          });
+
+          // Trigger browser download
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(link.href);
+
+          showToast(`Exported ${filename} (${isBinary ? 'Binary' : 'ASCII'})`);
+        } catch (err) {
+          console.error("Export error:", err);
+          showToast(`Export failed: ${err.message}`);
+        }
+      }
+
+      // Built-in fallback binary STL generator for 100% reliability
+      function exportCustomBinarySTL(geometry) {
+        const pos = geometry.attributes.position;
+        const triCount = pos.count / 3;
+        const bufferSize = 84 + (triCount * 50);
+        const buffer = new ArrayBuffer(bufferSize);
+        const view = new DataView(buffer);
+
+        // 80-byte header
+        const header = "Bambu Studio Compatible Parametric Storage Box";
+        for (let i = 0; i < 80; i++) {
+          view.setUint8(i, i < header.length ? header.charCodeAt(i) : 0);
+        }
+
+        // 4-byte triangle count
+        view.setUint32(80, triCount, true);
+
+        let offset = 84;
+        const vA = new THREE.Vector3();
+        const vB = new THREE.Vector3();
+        const vC = new THREE.Vector3();
+        const normal = new THREE.Vector3();
+
+        for (let i = 0; i < triCount; i++) {
+          const idx = i * 3;
+          vA.fromBufferAttribute(pos, idx);
+          vB.fromBufferAttribute(pos, idx + 1);
+          vC.fromBufferAttribute(pos, idx + 2);
+
+          // Calculate normal
+          normal.subVectors(vB, vA).cross(new THREE.Vector3().subVectors(vC, vA)).normalize();
+
+          // Normal vector
+          view.setFloat32(offset, normal.x, true); offset += 4;
+          view.setFloat32(offset, normal.y, true); offset += 4;
+          view.setFloat32(offset, normal.z, true); offset += 4;
+
+          // Vertex A
+          view.setFloat32(offset, vA.x, true); offset += 4;
+          view.setFloat32(offset, vA.y, true); offset += 4;
+          view.setFloat32(offset, vA.z, true); offset += 4;
+
+          // Vertex B
+          view.setFloat32(offset, vB.x, true); offset += 4;
+          view.setFloat32(offset, vB.y, true); offset += 4;
+          view.setFloat32(offset, vB.z, true); offset += 4;
+
+          // Vertex C
+          view.setFloat32(offset, vC.x, true); offset += 4;
+          view.setFloat32(offset, vC.y, true); offset += 4;
+          view.setFloat32(offset, vC.z, true); offset += 4;
+
+          // Attribute byte count (0)
+          view.setUint16(offset, 0, true); offset += 2;
+        }
+
+        return buffer;
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById('toast');
+        const text = document.getElementById('toast-message');
+        text.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3200);
+      }
+
+      // ==========================================
+      // APPLICATION BOOTSTRAP
+      // ==========================================
+      window.addEventListener('DOMContentLoaded', () => {
+        initThree();
+        setupParamListeners();
+        setupThemeToggle();
+      });
+    </script>
+  </body>
+</html>

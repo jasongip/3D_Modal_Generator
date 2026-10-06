@@ -1,0 +1,6 @@
+{
+  "name": "Parametric 3D Box Generator",
+  "description": "Parametric 3D-printable storage box generator with real-time 3D preview, filament material estimator, and Bambu Studio compatible STL export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
