@@ -214,9 +214,9 @@
 
       /* LEFT CONTROL PANEL */
       .control-panel {
-        width: 400px;
+        width: 410px;
         min-width: 340px;
-        max-width: 440px;
+        max-width: 450px;
         background-color: var(--bg-panel);
         border-right: 1px solid var(--border-color);
         display: flex;
@@ -228,18 +228,14 @@
       .control-scroll {
         flex: 1;
         overflow-y: auto;
-        padding: 20px;
+        padding: 18px;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 16px;
       }
 
-      /* Custom scrollbar */
       .control-scroll::-webkit-scrollbar {
         width: 6px;
-      }
-      .control-scroll::-webkit-scrollbar-track {
-        background: transparent;
       }
       .control-scroll::-webkit-scrollbar-thumb {
         background: var(--border-color);
@@ -251,10 +247,10 @@
         background-color: var(--bg-surface);
         border: 1px solid var(--border-color);
         border-radius: 12px;
-        padding: 16px;
+        padding: 14px 16px;
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: 12px;
         box-shadow: var(--shadow-elevation);
       }
 
@@ -312,7 +308,7 @@
       .param-group {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 5px;
       }
 
       .param-label-row {
@@ -408,7 +404,6 @@
         transform: scale(1.15);
       }
 
-      /* Step buttons */
       .step-btn {
         width: 24px;
         height: 24px;
@@ -431,8 +426,86 @@
         border-color: var(--border-focus);
       }
 
-      /* COMPARTMENTS SUMMARY */
-      .compartments-info-box {
+      /* TOGGLE SWITCH */
+      .toggle-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+      }
+
+      .switch-input {
+        display: none;
+      }
+
+      .switch-track {
+        width: 38px;
+        height: 20px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        position: relative;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+      }
+
+      .switch-thumb {
+        width: 14px;
+        height: 14px;
+        background: var(--text-muted);
+        border-radius: 50%;
+        position: absolute;
+        top: 2px;
+        left: 3px;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+      }
+
+      .switch-input:checked + .switch-track {
+        background: rgba(0, 174, 66, 0.25);
+        border-color: var(--accent-bambu);
+      }
+
+      .switch-input:checked + .switch-track .switch-thumb {
+        transform: translateX(17px);
+        background: var(--accent-bambu);
+      }
+
+      /* SEGMENTED CONTROL */
+      .segmented-control {
+        display: flex;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 3px;
+        gap: 3px;
+      }
+
+      .seg-btn {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 6px 4px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .seg-btn:hover {
+        color: var(--text-primary);
+      }
+
+      .seg-btn.active {
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      /* INFO BOX */
+      .info-box {
         background-color: var(--bg-input);
         border: 1px solid var(--border-color);
         border-radius: 8px;
@@ -459,7 +532,7 @@
         color: var(--text-primary);
       }
 
-      /* MATERIAL ESTIMATION CARD */
+      /* STATS CARD */
       .stats-card {
         background: linear-gradient(145deg, var(--bg-surface) 0%, rgba(0, 174, 66, 0.08) 100%);
         border: 1px solid var(--border-color);
@@ -520,43 +593,28 @@
 
       /* EXPORT PANEL */
       .panel-footer {
-        padding: 16px 20px;
+        padding: 14px 18px;
         background-color: var(--bg-panel);
         border-top: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
       }
 
-      .export-row {
+      .export-btn-group {
         display: flex;
-        align-items: center;
-        gap: 10px;
+        gap: 8px;
       }
 
-      .format-select {
-        height: 42px;
-        background: var(--bg-input);
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        color: var(--text-primary);
-        font-family: var(--font-mono);
-        font-size: 12px;
-        font-weight: 600;
-        padding: 0 10px;
-        outline: none;
-        cursor: pointer;
-      }
-
-      .btn-export {
+      .btn-export-main {
         flex: 1;
-        height: 44px;
+        height: 42px;
         background: linear-gradient(135deg, #00ae42 0%, #059669 100%);
         border: none;
         border-radius: 8px;
         color: #ffffff;
         font-family: var(--font-sans);
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
         display: flex;
         align-items: center;
@@ -567,14 +625,33 @@
         transition: all 0.2s ease;
       }
 
-      .btn-export:hover {
+      .btn-export-main:hover {
         background: linear-gradient(135deg, #00c34a 0%, #10b981 100%);
         box-shadow: 0 6px 20px rgba(0, 174, 66, 0.6);
         transform: translateY(-1px);
       }
 
-      .btn-export:active {
-        transform: translateY(1px);
+      .btn-export-secondary {
+        height: 42px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 0 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-export-secondary:hover {
+        background: var(--bg-surface-hover);
+        border-color: var(--border-focus);
       }
 
       .filename-preview {
@@ -602,7 +679,6 @@
         outline: none;
       }
 
-      /* VIEWPORT FLOATING TOOLBAR */
       .viewport-toolbar {
         position: absolute;
         top: 16px;
@@ -655,7 +731,6 @@
         background: var(--border-color);
       }
 
-      /* FILAMENT COLOR PICKER FLOATING */
       .color-picker-bar {
         position: absolute;
         top: 16px;
@@ -695,7 +770,6 @@
         box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
       }
 
-      /* VIEWPORT BOTTOM HELPER HUD */
       .viewport-bottom-hud {
         position: absolute;
         bottom: 16px;
@@ -737,7 +811,6 @@
         box-shadow: 0 0 6px rgba(0, 174, 66, 0.8);
       }
 
-      /* TOAST NOTIFICATION */
       .toast {
         position: fixed;
         bottom: 24px;
@@ -785,7 +858,7 @@
       </div>
 
       <div class="header-center">
-        <!-- Live Bambu Bed Fit Badge -->
+        <!-- Live Bambu Bed Limit Status Badge -->
         <div id="bambu-status-badge" class="bambu-status-badge fit">
           <svg id="badge-icon-fit" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20 6L9 17l-5-5"/>
@@ -820,7 +893,7 @@
       </div>
     </header>
 
-    <!-- APP MAIN BODY -->
+    <!-- MAIN BODY -->
     <div class="app-main">
       <!-- LEFT CONTROL PANEL -->
       <aside class="control-panel">
@@ -1041,7 +1114,7 @@
             </div>
 
             <!-- Compartment Dimension Readout -->
-            <div class="compartments-info-box">
+            <div class="info-box">
               <div class="info-row">
                 <span class="info-label">Total Compartments:</span>
                 <span id="readout-total-cells" class="info-val">4 cells (2 × 2)</span>
@@ -1053,12 +1126,129 @@
             </div>
           </div>
 
-          <!-- 4. MATERIAL & SLICER ESTIMATE -->
+          <!-- 4. MATCHING INSET LID (TYPE A) -->
+          <div class="control-section">
+            <div class="section-header">
+              <span class="section-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="4" width="20" height="5" rx="2"></rect>
+                  <path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"></path>
+                </svg>
+                4. Matching Lid (Type A 內嵌式)
+              </span>
+              <!-- Toggle Switch -->
+              <label class="toggle-label" title="Enable matching lid">
+                <input type="checkbox" id="check-has-lid" class="switch-input" checked onchange="toggleLidOption(this.checked)">
+                <div class="switch-track">
+                  <div class="switch-thumb"></div>
+                </div>
+              </label>
+            </div>
+
+            <div id="lid-options-panel" style="display: flex; flex-direction: column; gap: 12px;">
+              <!-- Option 1 Status Callout -->
+              <div class="info-box" style="background: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.3);">
+                <div style="display: flex; align-items: flex-start; gap: 8px;">
+                  <span style="font-size: 14px; line-height: 1;">🛡️</span>
+                  <div style="font-size: 11px; line-height: 1.45; color: var(--text-primary);">
+                    <strong style="color: var(--accent-bambu);">方案 1 已生效（分格自降高度）</strong><br>
+                    內籠十字分格頂部已自動降低 <span id="readout-recess-depth">3.5</span>mm。蓋子卡榫完全避開分格，蓋底平貼各格頂部，<strong>首飾、耳環、細藥丸 100% 防跳格</strong>！
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3D View Mode -->
+              <div class="param-group">
+                <div class="param-label-row">
+                  <span class="param-name">3D Preview Mode</span>
+                </div>
+                <div class="segmented-control">
+                  <button id="view-mode-closed" class="seg-btn active" onclick="setLidViewMode('closed')">
+                    Seated (蓋上)
+                  </button>
+                  <button id="view-mode-lifted" class="seg-btn" onclick="setLidViewMode('lifted')">
+                    Lifted (掀開)
+                  </button>
+                  <button id="view-mode-side" class="seg-btn" onclick="setLidViewMode('sideBySide')">
+                    Side-by-Side (排版)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Fit Clearance -->
+              <div class="param-group">
+                <div class="param-label-row">
+                  <span class="param-name">Fit Clearance (配合公差)</span>
+                  <div class="param-val-box">
+                    <input type="number" id="input-lid-clearance" class="num-input" value="0.35" min="0.15" max="0.65" step="0.05">
+                    <span class="unit-label">mm</span>
+                  </div>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" onclick="stepParam('lidClearance', -0.05)">-</button>
+                  <input type="range" id="range-lid-clearance" min="0.15" max="0.65" step="0.05" value="0.35">
+                  <button class="step-btn" onclick="stepParam('lidClearance', 0.05)">+</button>
+                </div>
+                <!-- Quick Tolerance Presets -->
+                <div style="display: flex; gap: 6px; margin-top: 2px;">
+                  <button class="preset-chip" style="flex:1" onclick="setClearance(0.20)">緊扣 (0.20mm)</button>
+                  <button class="preset-chip" style="flex:1" onclick="setClearance(0.35)">標準順滑 (0.35mm)</button>
+                  <button class="preset-chip" style="flex:1" onclick="setClearance(0.50)">防塵寬鬆 (0.50mm)</button>
+                </div>
+              </div>
+
+              <!-- Lip Inset Depth -->
+              <div class="param-group">
+                <div class="param-label-row">
+                  <span class="param-name">Lip Inset Depth (卡入深度)</span>
+                  <div class="param-val-box">
+                    <input type="number" id="input-lid-lip" class="num-input" value="3.5" min="2.0" max="8.0" step="0.5">
+                    <span class="unit-label">mm</span>
+                  </div>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" onclick="stepParam('lidLipDepth', -0.5)">-</button>
+                  <input type="range" id="range-lid-lip" min="2.0" max="8.0" step="0.5" value="3.5">
+                  <button class="step-btn" onclick="stepParam('lidLipDepth', 0.5)">+</button>
+                </div>
+              </div>
+
+              <!-- Lid Plate Thickness -->
+              <div class="param-group">
+                <div class="param-label-row">
+                  <span class="param-name">Lid Plate Thickness</span>
+                  <div class="param-val-box">
+                    <input type="number" id="input-lid-thick" class="num-input" value="2.0" min="1.2" max="4.0" step="0.4">
+                    <span class="unit-label">mm</span>
+                  </div>
+                </div>
+                <div class="slider-row">
+                  <button class="step-btn" onclick="stepParam('lidThickness', -0.4)">-</button>
+                  <input type="range" id="range-lid-thick" min="1.2" max="4.0" step="0.4" value="2.0">
+                  <button class="step-btn" onclick="stepParam('lidThickness', 0.4)">+</button>
+                </div>
+              </div>
+
+              <!-- Lid Features Note -->
+              <div class="info-box">
+                <div class="info-row">
+                  <span class="info-label">Printing Method:</span>
+                  <span class="info-val">Flat on Bed (100% Support-Free)</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Stackable Lip:</span>
+                  <span class="info-val">Compatible (穩陣上下堆疊)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. MATERIAL & SLICER ESTIMATE -->
           <div class="stats-card">
             <div class="stats-header">
               <div>
                 <div class="stat-label">Estimated PLA Filament</div>
-                <div id="stat-weight-hero" class="stats-badge-main">~75.7 g</div>
+                <div id="stat-weight-hero" class="stats-badge-main">~103.1 g</div>
               </div>
               <div class="stats-badge-sub" title="Standard PLA density">
                 1.24 g/cm³
@@ -1066,20 +1256,20 @@
             </div>
             <div class="stats-grid">
               <div class="stat-item">
-                <span class="stat-label">Solid Volume</span>
-                <span id="stat-volume" class="stat-value">61.06 cm³</span>
+                <span class="stat-label">Box Weight</span>
+                <span id="stat-box-weight" class="stat-value">~75.7 g</span>
               </div>
               <div class="stat-item">
-                <span class="stat-label">Filament Length (1.75mm)</span>
-                <span id="stat-length" class="stat-value">~25.4 m</span>
+                <span class="stat-label">Lid Weight</span>
+                <span id="stat-lid-weight" class="stat-value">~27.4 g</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Total Solid Volume</span>
+                <span id="stat-volume" class="stat-value">83.14 cm³</span>
               </div>
               <div class="stat-item">
                 <span class="stat-label">Estimated Print Time</span>
-                <span id="stat-time" class="stat-value">~3h 15m</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-label">Estimated Spool Cost</span>
-                <span id="stat-cost" class="stat-value">~$1.51 (@$20/kg)</span>
+                <span id="stat-time" class="stat-value">~4h 25m</span>
               </div>
             </div>
           </div>
@@ -1088,22 +1278,21 @@
 
         <!-- PANEL FOOTER / EXPORT ACTIONS -->
         <div class="panel-footer">
-          <div class="export-row">
-            <select id="export-format" class="format-select" title="STL Format">
-              <option value="binary" selected>Binary STL (Compact)</option>
-              <option value="ascii">ASCII STL (Text)</option>
-            </select>
-            <button id="btn-export-stl" class="btn-export" onclick="exportSTL()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              Export STL
+          <div class="export-btn-group">
+            <button class="btn-export-main" onclick="exportSTL('box')" title="Export Box STL">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export Box
+            </button>
+            <button id="btn-export-lid" class="btn-export-secondary" onclick="exportSTL('lid')" title="Export Lid STL (Flipped Flat)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="5" rx="2"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/></svg>
+              Export Lid
+            </button>
+            <button id="btn-export-both" class="btn-export-secondary" onclick="exportSTL('both')" title="Export Box + Lid Combined">
+              Both (Plate)
             </button>
           </div>
           <div id="filename-preview" class="filename-preview">
-            Box_100x100x40_2x2.stl
+            Box_100x100x40_2x2.stl & Lid_100x100.stl
           </div>
         </div>
       </aside>
@@ -1201,6 +1390,15 @@
         cols: 2,            // Columns (X count)
         rows: 2,            // Rows (Y count)
         dividerThickness: 1.6, // mm
+
+        // Lid (Type A Inset Lid)
+        hasLid: true,
+        lidClearance: 0.35,  // mm (Clearance gap)
+        lidLipDepth: 3.5,    // mm (Inset depth)
+        lidThickness: 2.0,   // mm (Lid plate thickness)
+        lidLipThickness: 1.6,// mm
+        lidViewMode: 'closed', // 'closed', 'lifted', 'sideBySide'
+
         // Viewport settings
         isWireframe: false,
         showBuildPlate: true,
@@ -1209,7 +1407,6 @@
         theme: 'dark'
       };
 
-      // Bambu Lab build plate size limit
       const BAMBU_LIMIT = 256; // mm
 
       // ==========================================
@@ -1217,26 +1414,24 @@
       // ==========================================
       let scene, camera, renderer, controls;
       let boxMesh = null;
+      let lidMesh = null;
       let buildPlateGroup = null;
-      let dimensionGroup = null;
       let material = null;
+      let lidMaterial = null;
       let canvas = null;
 
       function initThree() {
         canvas = document.getElementById('webgl-canvas');
         const container = canvas.parentElement;
 
-        // Create Scene
         scene = new THREE.Scene();
         scene.background = new THREE.Color(state.theme === 'dark' ? 0x0b0f19 : 0xf1f5f9);
 
         // Standard 3D CAD coordinate system: Z is UP!
-        // In Bambu Studio and 3D printing, Z is the build height
         camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 3000);
         camera.up.set(0, 0, 1);
         camera.position.set(190, -210, 160);
 
-        // Renderer
         renderer = new THREE.WebGLRenderer({
           canvas: canvas,
           antialias: true,
@@ -1247,23 +1442,17 @@
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-        // OrbitControls
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
         controls.target.set(0, 0, 20);
         controls.maxDistance = 1200;
         controls.minDistance = 20;
-        // Allow looking slightly from below build plate, but clamp
         controls.maxPolarAngle = Math.PI / 2 + 0.15;
 
-        // Studio Lighting
         setupLighting();
-
-        // Build Plate (Bambu Lab 256 x 256 mm)
         createBambuBuildPlate();
 
-        // Material for 3D Box (PBR PLA finish)
         material = new THREE.MeshStandardMaterial({
           color: new THREE.Color(state.filamentColor),
           roughness: 0.35,
@@ -1272,22 +1461,24 @@
           side: THREE.DoubleSide
         });
 
-        // Initial Geometry Generation
+        lidMaterial = new THREE.MeshStandardMaterial({
+          color: new THREE.Color(state.filamentColor),
+          roughness: 0.32,
+          metalness: 0.06,
+          wireframe: state.isWireframe,
+          side: THREE.DoubleSide
+        });
+
         updateMesh();
 
-        // Responsive resize
         window.addEventListener('resize', onWindowResize);
-
-        // Start render loop
         animate();
       }
 
       function setupLighting() {
-        // Soft Ambient Light
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
         scene.add(ambientLight);
 
-        // Key Light (warm directional light with shadows)
         const keyLight = new THREE.DirectionalLight(0xfffaed, 0.85);
         keyLight.position.set(160, -180, 260);
         keyLight.castShadow = true;
@@ -1303,29 +1494,22 @@
         keyLight.shadow.bias = -0.0005;
         scene.add(keyLight);
 
-        // Fill Light (soft cool light from opposite side)
         const fillLight = new THREE.DirectionalLight(0xe0f2fe, 0.45);
         fillLight.position.set(-180, 150, 180);
         scene.add(fillLight);
 
-        // Rim / Back Light
         const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
         rimLight.position.set(0, 200, 80);
         scene.add(rimLight);
       }
 
-      // ==========================================
-      // BAMBU LAB 256 x 256 BUILD PLATE
-      // ==========================================
       function createBambuBuildPlate() {
         buildPlateGroup = new THREE.Group();
-
         const plateSize = 256;
         const plateColor = state.theme === 'dark' ? 0x161e2e : 0xe2e8f0;
         const gridColorMajor = state.theme === 'dark' ? 0x334155 : 0xcfd8dc;
         const gridColorMinor = state.theme === 'dark' ? 0x1e293b : 0xe2e8f0;
 
-        // 1. Solid Bed Base Plate (Textured PEI look)
         const bedGeom = new THREE.BoxGeometry(plateSize, plateSize, 1.5);
         const bedMat = new THREE.MeshStandardMaterial({
           color: plateColor,
@@ -1337,7 +1521,6 @@
         bedMesh.receiveShadow = true;
         buildPlateGroup.add(bedMesh);
 
-        // 2. Build Plate Border Line (256x256 mm Printable Boundary)
         const borderGeom = new THREE.BufferGeometry();
         const half = plateSize / 2;
         const borderVertices = new Float32Array([
@@ -1348,18 +1531,14 @@
         ]);
         borderGeom.setAttribute('position', new THREE.BufferAttribute(borderVertices, 3));
         const borderMat = new THREE.LineBasicMaterial({
-          color: 0x00ae42, // Bambu green boundary
+          color: 0x00ae42,
           linewidth: 2
         });
         const borderLine = new THREE.LineSegments(borderGeom, borderMat);
         buildPlateGroup.add(borderLine);
 
-        // 3. Grid Lines (10mm minor, 50mm major)
-        const gridLinesGeom = new THREE.BufferGeometry();
-        const gridMajorGeom = new THREE.BufferGeometry();
         const minorVerts = [];
         const majorVerts = [];
-
         for (let x = -half + 10; x < half; x += 10) {
           if (x === 0) continue;
           const isMajor = Math.round(x) % 50 === 0;
@@ -1373,39 +1552,34 @@
           target.push(-half, y, 0.02, half, y, 0.02);
         }
 
-        // Center Origin Crosshair (X red, Y green)
         const axisLength = 20;
         const axisGeom = new THREE.BufferGeometry();
         const axisVerts = new Float32Array([
-          0, 0, 0.06,  axisLength, 0, 0.06,  // X (Red)
-          0, 0, 0.06,  0, axisLength, 0.06   // Y (Green)
+          0, 0, 0.06,  axisLength, 0, 0.06,
+          0, 0, 0.06,  0, axisLength, 0.06
         ]);
         axisGeom.setAttribute('position', new THREE.BufferAttribute(axisVerts, 3));
 
         if (minorVerts.length > 0) {
-          gridLinesGeom.setAttribute('position', new THREE.Float32BufferAttribute(minorVerts, 3));
-          const minorMat = new THREE.LineBasicMaterial({ color: gridColorMinor });
-          buildPlateGroup.add(new THREE.LineSegments(gridLinesGeom, minorMat));
+          const minorGeom = new THREE.BufferGeometry();
+          minorGeom.setAttribute('position', new THREE.Float32BufferAttribute(minorVerts, 3));
+          buildPlateGroup.add(new THREE.LineSegments(minorGeom, new THREE.LineBasicMaterial({ color: gridColorMinor })));
         }
-
         if (majorVerts.length > 0) {
-          gridMajorGeom.setAttribute('position', new THREE.Float32BufferAttribute(majorVerts, 3));
-          const majorMat = new THREE.LineBasicMaterial({ color: gridColorMajor });
-          buildPlateGroup.add(new THREE.LineSegments(gridMajorGeom, majorMat));
+          const majorGeom = new THREE.BufferGeometry();
+          majorGeom.setAttribute('position', new THREE.Float32BufferAttribute(majorVerts, 3));
+          buildPlateGroup.add(new THREE.LineSegments(majorGeom, new THREE.LineBasicMaterial({ color: gridColorMajor })));
         }
 
-        // Center axis lines
-        const centerLines = new THREE.LineSegments(axisGeom, new THREE.LineBasicMaterial({ color: 0xef4444 }));
-        buildPlateGroup.add(centerLines);
-
+        buildPlateGroup.add(new THREE.LineSegments(axisGeom, new THREE.LineBasicMaterial({ color: 0xef4444 })));
         scene.add(buildPlateGroup);
       }
 
       // ==========================================
-      // WATERTIGHT 2-MANIFOLD GEOMETRY GENERATION
+      // WATERTIGHT BOX GEOMETRY GENERATION
       // ==========================================
       function generateBoxGeometry(params) {
-        const { length, width, height, wallThickness, bottomThickness, fillet, cols, rows, dividerThickness } = params;
+        const { length, width, height, wallThickness, bottomThickness, fillet, cols, rows, dividerThickness, hasLid, lidLipDepth } = params;
 
         const L = Math.max(20, length);
         const W = Math.max(20, width);
@@ -1416,72 +1590,104 @@
         const C = Math.max(1, Math.min(20, Math.floor(cols)));
         const R_count = Math.max(1, Math.min(20, Math.floor(rows)));
 
-        // Max fillet check
+        // OPTION 1: Recess dividers when Lid is enabled
+        const recessDepth = hasLid ? Math.max(1.5, Math.min(lidLipDepth || 3.5, H - tb - 2)) : 0;
+        const hDiv = H - recessDepth;
+
         const maxFillet = Math.max(0, Math.min(fillet, L / 2 - 0.5, W / 2 - 0.5, 20));
         const R = Math.max(0, maxFillet);
 
-        // Internal available span
         const availX = L - 2 * tw - (C - 1) * td;
         const availY = W - 2 * tw - (R_count - 1) * td;
 
         if (availX <= 1 || availY <= 1) {
-          // Safe fallback if wall thicknesses exceed box
           return new THREE.BoxGeometry(L, W, H);
         }
 
         const cellW = availX / C;
         const cellH = availY / R_count;
-
         const hx = L / 2;
         const hy = W / 2;
+        const ix0 = -hx + tw;
+        const ix1 = hx - tw;
+        const iy0 = -hy + tw;
+        const iy1 = hy - tw;
 
-        // 1. Build Outer Contour in CCW (Counter-Clockwise) order
         const outerPoints = [];
         const arcSegments = R > 0.05 ? 8 : 1;
 
         if (R > 0.05) {
-          // Corner 1: Bottom-Right (center: hx - R, -hy + R), angle -PI/2 to 0
           const cx1 = hx - R, cy1 = -hy + R;
           for (let i = 0; i <= arcSegments; i++) {
             const angle = -Math.PI / 2 + (i / arcSegments) * (Math.PI / 2);
             outerPoints.push(new THREE.Vector2(cx1 + R * Math.cos(angle), cy1 + R * Math.sin(angle)));
           }
-          // Corner 2: Top-Right (center: hx - R, hy - R), angle 0 to PI/2
           const cx2 = hx - R, cy2 = hy - R;
           for (let i = 1; i <= arcSegments; i++) {
             const angle = (i / arcSegments) * (Math.PI / 2);
             outerPoints.push(new THREE.Vector2(cx2 + R * Math.cos(angle), cy2 + R * Math.sin(angle)));
           }
-          // Corner 3: Top-Left (center: -hx + R, hy - R), angle PI/2 to PI
           const cx3 = -hx + R, cy3 = hy - R;
           for (let i = 1; i <= arcSegments; i++) {
             const angle = Math.PI / 2 + (i / arcSegments) * (Math.PI / 2);
             outerPoints.push(new THREE.Vector2(cx3 + R * Math.cos(angle), cy3 + R * Math.sin(angle)));
           }
-          // Corner 4: Bottom-Left (center: -hx + R, -hy + R), angle PI to 3*PI/2
           const cx4 = -hx + R, cy4 = -hy + R;
           for (let i = 1; i < arcSegments; i++) {
             const angle = Math.PI + (i / arcSegments) * (Math.PI / 2);
             outerPoints.push(new THREE.Vector2(cx4 + R * Math.cos(angle), cy4 + R * Math.sin(angle)));
           }
         } else {
-          // Sharp rectangle (CCW)
           outerPoints.push(new THREE.Vector2(hx, -hy));
           outerPoints.push(new THREE.Vector2(hx, hy));
           outerPoints.push(new THREE.Vector2(-hx, hy));
           outerPoints.push(new THREE.Vector2(-hx, -hy));
         }
 
-        // 2. Build Pockets
+        // Inner boundary CCW matching exact pocket & divider junctions
+        const innerCCW = [];
+        innerCCW.push(new THREE.Vector2(ix0, iy0));
+        for (let c = 0; c < C - 1; c++) {
+          const px1 = ix0 + c * (cellW + td) + cellW;
+          const px0_next = px1 + td;
+          innerCCW.push(new THREE.Vector2(px1, iy0));
+          innerCCW.push(new THREE.Vector2(px0_next, iy0));
+        }
+        innerCCW.push(new THREE.Vector2(ix1, iy0));
+
+        for (let r = 0; r < R_count - 1; r++) {
+          const py1 = iy0 + r * (cellH + td) + cellH;
+          const py0_next = py1 + td;
+          innerCCW.push(new THREE.Vector2(ix1, py1));
+          innerCCW.push(new THREE.Vector2(ix1, py0_next));
+        }
+        innerCCW.push(new THREE.Vector2(ix1, iy1));
+
+        for (let c = C - 2; c >= 0; c--) {
+          const px1 = ix0 + c * (cellW + td) + cellW;
+          const px0_next = px1 + td;
+          innerCCW.push(new THREE.Vector2(px0_next, iy1));
+          innerCCW.push(new THREE.Vector2(px1, iy1));
+        }
+        innerCCW.push(new THREE.Vector2(ix0, iy1));
+
+        for (let r = R_count - 2; r >= 0; r--) {
+          const py1 = iy0 + r * (cellH + td) + cellH;
+          const py0_next = py1 + td;
+          innerCCW.push(new THREE.Vector2(ix0, py0_next));
+          innerCCW.push(new THREE.Vector2(ix0, py1));
+        }
+
+        const innerCW = [...innerCCW].reverse();
+
         const pockets = [];
         for (let c = 0; c < C; c++) {
           for (let r = 0; r < R_count; r++) {
-            const px0 = -hx + tw + c * (cellW + td);
+            const px0 = ix0 + c * (cellW + td);
             const px1 = px0 + cellW;
-            const py0 = -hy + tw + r * (cellH + td);
+            const py0 = iy0 + r * (cellH + td);
             const py1 = py0 + cellH;
 
-            // CCW points for inner walls & floor
             const ccw = [
               new THREE.Vector2(px0, py0),
               new THREE.Vector2(px1, py0),
@@ -1489,7 +1695,6 @@
               new THREE.Vector2(px0, py1)
             ];
 
-            // CW points for top rim hole triangulation (Earcut requires clockwise holes)
             const cw = [
               new THREE.Vector2(px0, py0),
               new THREE.Vector2(px0, py1),
@@ -1501,28 +1706,27 @@
           }
         }
 
-        // Array to collect 3D triangle vertex positions
         const positions = [];
-
         function addTriangle(p1, p2, p3) {
           positions.push(p1.x, p1.y, p1.z);
           positions.push(p2.x, p2.y, p2.z);
           positions.push(p3.x, p3.y, p3.z);
         }
+        function addQuad(p0, p1, p2, p3) {
+          addTriangle(p0, p1, p2);
+          addTriangle(p0, p2, p3);
+        }
 
-        // 3. BOTTOM FACE (at Z = 0)
-        // Outer contour triangulated, facing DOWN (normal = -Z)
+        // 1. Bottom Face (Z = 0)
         const bottomTris = THREE.ShapeUtils.triangulateShape(outerPoints, []);
         for (const tri of bottomTris) {
-          // Flip winding (0, 2, 1) so normal points -Z
           const v0 = { x: outerPoints[tri[0]].x, y: outerPoints[tri[0]].y, z: 0 };
           const v1 = { x: outerPoints[tri[2]].x, y: outerPoints[tri[2]].y, z: 0 };
           const v2 = { x: outerPoints[tri[1]].x, y: outerPoints[tri[1]].y, z: 0 };
           addTriangle(v0, v1, v2);
         }
 
-        // 4. OUTER SIDE WALLS (Z = 0 to Z = H)
-        // Normal pointing OUTWARD
+        // 2. Outer Side Walls (Z = 0 to H)
         const numOuter = outerPoints.length;
         for (let i = 0; i < numOuter; i++) {
           const next = (i + 1) % numOuter;
@@ -1538,52 +1742,108 @@
           addTriangle(A0, B1, A1);
         }
 
-        // 5. TOP RIM (at Z = H)
-        // Triangulate outer contour with pocket holes
-        const holePaths = pockets.map(p => p.cw);
-        const topTris = THREE.ShapeUtils.triangulateShape(outerPoints, holePaths);
-
-        const allTopPoints = [...outerPoints];
-        for (const p of pockets) {
-          allTopPoints.push(...p.cw);
-        }
-
-        for (const tri of topTris) {
-          // Normal points UP (+Z)
+        // 3. Top Rim at Z = H
+        const topRimTris = THREE.ShapeUtils.triangulateShape(outerPoints, [innerCW]);
+        const allTopPoints = [...outerPoints, ...innerCW];
+        for (const tri of topRimTris) {
           const v0 = { x: allTopPoints[tri[0]].x, y: allTopPoints[tri[0]].y, z: H };
           const v1 = { x: allTopPoints[tri[1]].x, y: allTopPoints[tri[1]].y, z: H };
           const v2 = { x: allTopPoints[tri[2]].x, y: allTopPoints[tri[2]].y, z: H };
           addTriangle(v0, v1, v2);
         }
 
-        // 6. POCKET FLOORS (at Z = tb) & INNER WALLS (Z = tb to Z = H)
-        for (const p of pockets) {
-          // Floor of pocket at Z = tb, normal facing UP (+Z)
-          const f0 = { x: p.ccw[0].x, y: p.ccw[0].y, z: tb };
-          const f1 = { x: p.ccw[1].x, y: p.ccw[1].y, z: tb };
-          const f2 = { x: p.ccw[2].x, y: p.ccw[2].y, z: tb };
-          const f3 = { x: p.ccw[3].x, y: p.ccw[3].y, z: tb };
+        if (recessDepth > 0.05) {
+          // 4. Vertical collar inside outer wall from Z = hDiv to Z = H
+          for (let i = 0; i < innerCW.length; i++) {
+            const next = (i + 1) % innerCW.length;
+            const pA = innerCW[i], pB = innerCW[next];
+            addTriangle({ x: pB.x, y: pB.y, z: H }, { x: pA.x, y: pA.y, z: H }, { x: pA.x, y: pA.y, z: hDiv });
+            addTriangle({ x: pB.x, y: pB.y, z: H }, { x: pA.x, y: pA.y, z: hDiv }, { x: pB.x, y: pB.y, z: hDiv });
+          }
 
-          addTriangle(f0, f1, f2);
-          addTriangle(f0, f2, f3);
+          // 5. Divider tops at Z = hDiv
+          // Column dividers
+          for (let c = 0; c < C - 1; c++) {
+            const x0 = ix0 + c * (cellW + td) + cellW;
+            const x1 = x0 + td;
+            for (let r = 0; r < R_count; r++) {
+              const y0 = iy0 + r * (cellH + td);
+              const y1 = y0 + cellH;
+              addQuad({ x: x0, y: y0, z: hDiv }, { x: x1, y: y0, z: hDiv }, { x: x1, y: y1, z: hDiv }, { x: x0, y: y1, z: hDiv });
+            }
+          }
+          // Row dividers
+          for (let r = 0; r < R_count - 1; r++) {
+            const y0 = iy0 + r * (cellH + td) + cellH;
+            const y1 = y0 + td;
+            for (let c = 0; c < C; c++) {
+              const x0 = ix0 + c * (cellW + td);
+              const x1 = x0 + cellW;
+              addQuad({ x: x0, y: y0, z: hDiv }, { x: x1, y: y0, z: hDiv }, { x: x1, y: y1, z: hDiv }, { x: x0, y: y1, z: hDiv });
+            }
+          }
+          // Intersection squares
+          for (let c = 0; c < C - 1; c++) {
+            const x0 = ix0 + c * (cellW + td) + cellW;
+            const x1 = x0 + td;
+            for (let r = 0; r < R_count - 1; r++) {
+              const y0 = iy0 + r * (cellH + td);
+              const y1 = y0 + td;
+              addQuad({ x: x0, y: y0, z: hDiv }, { x: x1, y: y0, z: hDiv }, { x: x1, y: y1, z: hDiv }, { x: x0, y: y1, z: hDiv });
+            }
+          }
 
-          // Inner side walls, normal facing INWARD (into pocket)
-          for (let i = 0; i < 4; i++) {
-            const next = (i + 1) % 4;
-            const pA = p.ccw[i];
-            const pB = p.ccw[next];
+          // 6. Pockets Floor & Walls (walls go up to hDiv)
+          for (const p of pockets) {
+            const f0 = { x: p.ccw[0].x, y: p.ccw[0].y, z: tb };
+            const f1 = { x: p.ccw[1].x, y: p.ccw[1].y, z: tb };
+            const f2 = { x: p.ccw[2].x, y: p.ccw[2].y, z: tb };
+            const f3 = { x: p.ccw[3].x, y: p.ccw[3].y, z: tb };
 
-            const wA0 = { x: pA.x, y: pA.y, z: tb };
-            const wB0 = { x: pB.x, y: pB.y, z: tb };
-            const wA1 = { x: pA.x, y: pA.y, z: H };
-            const wB1 = { x: pB.x, y: pB.y, z: H };
+            addTriangle(f0, f1, f2);
+            addTriangle(f0, f2, f3);
 
-            addTriangle(wA0, wA1, wB1);
-            addTriangle(wA0, wB1, wB0);
+            for (let i = 0; i < 4; i++) {
+              const next = (i + 1) % 4;
+              const pA = p.ccw[i];
+              const pB = p.ccw[next];
+
+              const wA0 = { x: pA.x, y: pA.y, z: tb };
+              const wB0 = { x: pB.x, y: pB.y, z: tb };
+              const wA1 = { x: pA.x, y: pA.y, z: hDiv };
+              const wB1 = { x: pB.x, y: pB.y, z: hDiv };
+
+              addTriangle(wA0, wA1, wB1);
+              addTriangle(wA0, wB1, wB0);
+            }
+          }
+        } else {
+          // Standard flush organizer when lid is disabled
+          for (const p of pockets) {
+            const f0 = { x: p.ccw[0].x, y: p.ccw[0].y, z: tb };
+            const f1 = { x: p.ccw[1].x, y: p.ccw[1].y, z: tb };
+            const f2 = { x: p.ccw[2].x, y: p.ccw[2].y, z: tb };
+            const f3 = { x: p.ccw[3].x, y: p.ccw[3].y, z: tb };
+
+            addTriangle(f0, f1, f2);
+            addTriangle(f0, f2, f3);
+
+            for (let i = 0; i < 4; i++) {
+              const next = (i + 1) % 4;
+              const pA = p.ccw[i];
+              const pB = p.ccw[next];
+
+              const wA0 = { x: pA.x, y: pA.y, z: tb };
+              const wB0 = { x: pB.x, y: pB.y, z: tb };
+              const wA1 = { x: pA.x, y: pA.y, z: H };
+              const wB1 = { x: pB.x, y: pB.y, z: H };
+
+              addTriangle(wA0, wA1, wB1);
+              addTriangle(wA0, wB1, wB0);
+            }
           }
         }
 
-        // Create BufferGeometry
         const geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
         geometry.computeVertexNormals();
@@ -1591,7 +1851,217 @@
       }
 
       // ==========================================
-      // MESH UPDATE & REAL-TIME STATS
+      // WATERTIGHT LID GEOMETRY GENERATION (TYPE A)
+      // ==========================================
+      function generateLidGeometry(params) {
+        const { length, width, wallThickness, fillet, lidClearance, lidThickness, lidLipDepth, lidLipThickness } = params;
+
+        const L = Math.max(20, length);
+        const W = Math.max(20, width);
+        const tw = Math.max(0.8, wallThickness);
+        const clearance = Math.max(0.1, lidClearance);
+        const tLid = Math.max(1.0, lidThickness);
+        // Vertical clearance of 0.3mm to ensure lid does not hit/jam on dividers
+        const lipDepth = Math.max(1.2, lidLipDepth - 0.3);
+        const lipTw = Math.max(1.0, lidLipThickness);
+
+        const hx = L / 2;
+        const hy = W / 2;
+        const rOuter = Math.min(fillet, hx - 0.5, hy - 0.5);
+
+        // Outer plate contour (CCW)
+        const outer = [];
+        const arcSeg = rOuter > 0.05 ? 8 : 1;
+        if (rOuter > 0.05) {
+          const cx1 = hx - rOuter, cy1 = -hy + rOuter;
+          for (let i = 0; i <= arcSeg; i++) {
+            const a = -Math.PI / 2 + (i / arcSeg) * (Math.PI / 2);
+            outer.push(new THREE.Vector2(cx1 + rOuter * Math.cos(a), cy1 + rOuter * Math.sin(a)));
+          }
+          const cx2 = hx - rOuter, cy2 = hy - rOuter;
+          for (let i = 1; i <= arcSeg; i++) {
+            const a = (i / arcSeg) * (Math.PI / 2);
+            outer.push(new THREE.Vector2(cx2 + rOuter * Math.cos(a), cy2 + rOuter * Math.sin(a)));
+          }
+          const cx3 = -hx + rOuter, cy3 = hy - rOuter;
+          for (let i = 1; i <= arcSeg; i++) {
+            const a = Math.PI / 2 + (i / arcSeg) * (Math.PI / 2);
+            outer.push(new THREE.Vector2(cx3 + rOuter * Math.cos(a), cy3 + rOuter * Math.sin(a)));
+          }
+          const cx4 = -hx + rOuter, cy4 = -hy + rOuter;
+          for (let i = 1; i < arcSeg; i++) {
+            const a = Math.PI + (i / arcSeg) * (Math.PI / 2);
+            outer.push(new THREE.Vector2(cx4 + rOuter * Math.cos(a), cy4 + rOuter * Math.sin(a)));
+          }
+        } else {
+          outer.push(new THREE.Vector2(hx, -hy));
+          outer.push(new THREE.Vector2(hx, hy));
+          outer.push(new THREE.Vector2(-hx, hy));
+          outer.push(new THREE.Vector2(-hx, -hy));
+        }
+
+        // Lip outer contour (offset by clearance)
+        const lipL = Math.max(10, L - 2 * tw - 2 * clearance);
+        const lipW = Math.max(10, W - 2 * tw - 2 * clearance);
+        const lipHx = lipL / 2;
+        const lipHy = lipW / 2;
+        const rLip = Math.max(0, Math.min(rOuter - tw - clearance, lipHx - 0.5, lipHy - 0.5));
+
+        const lipOuter = [];
+        const lipArcSeg = rLip > 0.05 ? 6 : 1;
+        if (rLip > 0.05) {
+          const cx1 = lipHx - rLip, cy1 = -lipHy + rLip;
+          for (let i = 0; i <= lipArcSeg; i++) {
+            const a = -Math.PI / 2 + (i / lipArcSeg) * (Math.PI / 2);
+            lipOuter.push(new THREE.Vector2(cx1 + rLip * Math.cos(a), cy1 + rLip * Math.sin(a)));
+          }
+          const cx2 = lipHx - rLip, cy2 = lipHy - rLip;
+          for (let i = 1; i <= lipArcSeg; i++) {
+            const a = (i / lipArcSeg) * (Math.PI / 2);
+            lipOuter.push(new THREE.Vector2(cx2 + rLip * Math.cos(a), cy2 + rLip * Math.sin(a)));
+          }
+          const cx3 = -lipHx + rLip, cy3 = hy - rLip;
+          for (let i = 1; i <= lipArcSeg; i++) {
+            const a = Math.PI / 2 + (i / lipArcSeg) * (Math.PI / 2);
+            lipOuter.push(new THREE.Vector2(cx3 + rLip * Math.cos(a), cy3 + rLip * Math.sin(a)));
+          }
+          const cx4 = -lipHx + rLip, cy4 = -lipHy + rLip;
+          for (let i = 1; i < lipArcSeg; i++) {
+            const a = Math.PI + (i / lipArcSeg) * (Math.PI / 2);
+            lipOuter.push(new THREE.Vector2(cx4 + rLip * Math.cos(a), cy4 + rLip * Math.sin(a)));
+          }
+        } else {
+          lipOuter.push(new THREE.Vector2(lipHx, -lipHy));
+          lipOuter.push(new THREE.Vector2(lipHx, lipHy));
+          lipOuter.push(new THREE.Vector2(-lipHx, lipHy));
+          lipOuter.push(new THREE.Vector2(-lipHx, -lipHy));
+        }
+
+        // Lip inner contour (hollow ring)
+        const inLipHx = lipHx - lipTw;
+        const inLipHy = lipHy - lipTw;
+        const rInLip = Math.max(0, rLip - lipTw);
+        const lipInnerCW = [];
+        if (rInLip > 0.05) {
+          const cx1 = inLipHx - rInLip, cy1 = -inLipHy + rInLip;
+          for (let i = lipArcSeg; i >= 0; i--) {
+            const a = -Math.PI / 2 + (i / lipArcSeg) * (Math.PI / 2);
+            lipInnerCW.push(new THREE.Vector2(cx1 + rInLip * Math.cos(a), cy1 + rInLip * Math.sin(a)));
+          }
+          const cx4 = -inLipHx + rInLip, cy4 = -inLipHy + rInLip;
+          for (let i = lipArcSeg; i >= 1; i--) {
+            const a = Math.PI + (i / lipArcSeg) * (Math.PI / 2);
+            lipInnerCW.push(new THREE.Vector2(cx4 + rInLip * Math.cos(a), cy4 + rInLip * Math.sin(a)));
+          }
+          const cx3 = -inLipHx + rInLip, cy3 = inLipHy - rInLip;
+          for (let i = lipArcSeg; i >= 1; i--) {
+            const a = Math.PI / 2 + (i / lipArcSeg) * (Math.PI / 2);
+            lipInnerCW.push(new THREE.Vector2(cx3 + rInLip * Math.cos(a), cy3 + rInLip * Math.sin(a)));
+          }
+          const cx2 = inLipHx - rInLip, cy2 = inLipHy - rInLip;
+          for (let i = lipArcSeg; i >= 1; i--) {
+            const a = (i / lipArcSeg) * (Math.PI / 2);
+            lipInnerCW.push(new THREE.Vector2(cx2 + rInLip * Math.cos(a), cy2 + rInLip * Math.sin(a)));
+          }
+        } else {
+          lipInnerCW.push(new THREE.Vector2(inLipHx, -inLipHy));
+          lipInnerCW.push(new THREE.Vector2(-inLipHx, -inLipHy));
+          lipInnerCW.push(new THREE.Vector2(-inLipHx, inLipHy));
+          lipInnerCW.push(new THREE.Vector2(inLipHx, inLipHy));
+        }
+
+        const positions = [];
+        function addTri(p1, p2, p3) {
+          positions.push(p1.x, p1.y, p1.z);
+          positions.push(p2.x, p2.y, p2.z);
+          positions.push(p3.x, p3.y, p3.z);
+        }
+
+        // Coordinate space when printed flat on bed:
+        // Flat outer plate is at Z = 0 (against the build plate)
+        // Outer plate height from Z = 0 to Z = tLid
+        // Inset Lip extrudes upwards from Z = tLid to Z = tLid + lipDepth
+
+        // 1. Bottom face of flat plate (at Z = 0, facing down -Z)
+        const bottomTris = THREE.ShapeUtils.triangulateShape(outer, []);
+        for (const tri of bottomTris) {
+          addTri(
+            { x: outer[tri[0]].x, y: outer[tri[0]].y, z: 0 },
+            { x: outer[tri[2]].x, y: outer[tri[2]].y, z: 0 },
+            { x: outer[tri[1]].x, y: outer[tri[1]].y, z: 0 }
+          );
+        }
+
+        // 2. Outer side walls of flat plate (Z = 0 to Z = tLid)
+        const nOut = outer.length;
+        for (let i = 0; i < nOut; i++) {
+          const next = (i + 1) % nOut;
+          const pA = outer[i], pB = outer[next];
+          addTri({ x: pA.x, y: pA.y, z: 0 }, { x: pB.x, y: pB.y, z: 0 }, { x: pB.x, y: pB.y, z: tLid });
+          addTri({ x: pA.x, y: pA.y, z: 0 }, { x: pB.x, y: pB.y, z: tLid }, { x: pA.x, y: pA.y, z: tLid });
+        }
+
+        // 3. Step surface outside lip (at Z = tLid)
+        const lipOuterCW = [...lipOuter].reverse();
+        const stepTris = THREE.ShapeUtils.triangulateShape(outer, [lipOuterCW]);
+        const allStepPts = [...outer, ...lipOuterCW];
+        for (const tri of stepTris) {
+          addTri(
+            { x: allStepPts[tri[0]].x, y: allStepPts[tri[0]].y, z: tLid },
+            { x: allStepPts[tri[1]].x, y: allStepPts[tri[1]].y, z: tLid },
+            { x: allStepPts[tri[2]].x, y: allStepPts[tri[2]].y, z: tLid }
+          );
+        }
+
+        // 4. Lip outer vertical wall (Z = tLid to Z = tLid + lipDepth)
+        const nLip = lipOuter.length;
+        const zLipTop = tLid + lipDepth;
+        for (let i = 0; i < nLip; i++) {
+          const next = (i + 1) % nLip;
+          const pA = lipOuter[i], pB = lipOuter[next];
+          addTri({ x: pA.x, y: pA.y, z: tLid }, { x: pB.x, y: pB.y, z: tLid }, { x: pB.x, y: pB.y, z: zLipTop });
+          addTri({ x: pA.x, y: pA.y, z: tLid }, { x: pB.x, y: pB.y, z: zLipTop }, { x: pA.x, y: pA.y, z: zLipTop });
+        }
+
+        // 5. Lip top rim (at Z = zLipTop)
+        const rimTris = THREE.ShapeUtils.triangulateShape(lipOuter, [lipInnerCW]);
+        const allRimPts = [...lipOuter, ...lipInnerCW];
+        for (const tri of rimTris) {
+          addTri(
+            { x: allRimPts[tri[0]].x, y: allRimPts[tri[0]].y, z: zLipTop },
+            { x: allRimPts[tri[1]].x, y: allRimPts[tri[1]].y, z: zLipTop },
+            { x: allRimPts[tri[2]].x, y: allRimPts[tri[2]].y, z: zLipTop }
+          );
+        }
+
+        // 6. Lip inner vertical wall (Z = tLid to Z = zLipTop)
+        const lipInnerCCW = [...lipInnerCW].reverse();
+        const nInLip = lipInnerCCW.length;
+        for (let i = 0; i < nInLip; i++) {
+          const next = (i + 1) % nInLip;
+          const pA = lipInnerCCW[i], pB = lipInnerCCW[next];
+          addTri({ x: pA.x, y: pA.y, z: tLid }, { x: pA.x, y: pA.y, z: zLipTop }, { x: pB.x, y: pB.y, z: zLipTop });
+          addTri({ x: pA.x, y: pA.y, z: tLid }, { x: pB.x, y: pB.y, z: tLid }, { x: pA.x, y: pA.y, z: zLipTop });
+        }
+
+        // 7. Floor inside lip (at Z = tLid)
+        const floorTris = THREE.ShapeUtils.triangulateShape(lipInnerCCW, []);
+        for (const tri of floorTris) {
+          addTri(
+            { x: lipInnerCCW[tri[0]].x, y: lipInnerCCW[tri[0]].y, z: tLid },
+            { x: lipInnerCCW[tri[1]].x, y: lipInnerCCW[tri[1]].y, z: tLid },
+            { x: lipInnerCCW[tri[2]].x, y: lipInnerCCW[tri[2]].y, z: tLid }
+          );
+        }
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.computeVertexNormals();
+        return geometry;
+      }
+
+      // ==========================================
+      // MESH UPDATE & VIEW SYNC
       // ==========================================
       let updateQueued = false;
 
@@ -1608,32 +2078,111 @@
       function updateMesh() {
         if (!scene) return;
 
-        // 1. Remove existing mesh
+        // 1. Remove existing meshes
         if (boxMesh) {
           scene.remove(boxMesh);
           if (boxMesh.geometry) boxMesh.geometry.dispose();
         }
+        if (lidMesh) {
+          scene.remove(lidMesh);
+          if (lidMesh.geometry) lidMesh.geometry.dispose();
+          lidMesh = null;
+        }
 
-        // 2. Build new watertight geometry
-        const geom = generateBoxGeometry(state);
-
-        // 3. Create mesh with cast/receive shadow
-        boxMesh = new THREE.Mesh(geom, material);
+        // 2. Generate Box Geometry
+        const boxGeom = generateBoxGeometry(state);
+        boxMesh = new THREE.Mesh(boxGeom, material);
         boxMesh.castShadow = true;
         boxMesh.receiveShadow = true;
         scene.add(boxMesh);
 
-        // 4. Update UI calculations & warnings
+        // 3. Generate Lid Geometry if enabled
+        let totalTriangles = boxGeom.attributes.position.count / 3;
+
+        if (state.hasLid) {
+          const lidGeom = generateLidGeometry(state);
+          lidMesh = new THREE.Mesh(lidGeom, lidMaterial);
+          lidMesh.castShadow = true;
+          lidMesh.receiveShadow = true;
+          scene.add(lidMesh);
+
+          totalTriangles += lidGeom.attributes.position.count / 3;
+          updateLidPosition();
+        } else {
+          boxMesh.position.set(0, 0, 0);
+        }
+
+        // 4. Update UI calculations, warnings, filenames
         updateCalculations();
         updateBambuLimitCheck();
         updateFilenamePreview();
 
-        // 5. Update triangle count badge
-        const triCount = geom.attributes.position.count / 3;
-        document.getElementById('triangles-count').textContent = `${triCount.toLocaleString()} Triangles`;
+        document.getElementById('triangles-count').textContent = `${totalTriangles.toLocaleString()} Triangles`;
       }
 
-      // Real-time Material & Volumetric Estimation
+      function updateLidPosition() {
+        if (!lidMesh || !boxMesh) return;
+
+        const L = state.length;
+        const H = state.height;
+        const tLid = state.lidThickness;
+
+        if (state.lidViewMode === 'closed') {
+          // Box centered at origin
+          boxMesh.position.set(0, 0, 0);
+          // Lid flipped upside-down so lip points down into box
+          lidMesh.rotation.set(Math.PI, 0, 0);
+          lidMesh.position.set(0, 0, H + tLid);
+        } else if (state.lidViewMode === 'lifted') {
+          boxMesh.position.set(0, 0, 0);
+          lidMesh.rotation.set(Math.PI, 0, 0);
+          lidMesh.position.set(0, 0, H + tLid + 38);
+        } else if (state.lidViewMode === 'sideBySide') {
+          // Lay both flat on the bed for printing
+          const spacing = 12;
+          const shiftX = (L + spacing) / 2;
+          boxMesh.position.set(-shiftX, 0, 0);
+          lidMesh.rotation.set(0, 0, 0);
+          lidMesh.position.set(shiftX, 0, 0);
+        }
+      }
+
+      function setLidViewMode(mode) {
+        state.lidViewMode = mode;
+        ['closed', 'lifted', 'side'].forEach(m => {
+          const btn = document.getElementById(`view-mode-${m}`);
+          if (btn) btn.classList.remove('active');
+        });
+        const activeKey = mode === 'sideBySide' ? 'side' : mode;
+        const activeBtn = document.getElementById(`view-mode-${activeKey}`);
+        if (activeBtn) activeBtn.classList.add('active');
+
+        updateLidPosition();
+        updateBambuLimitCheck();
+      }
+
+      function toggleLidOption(checked) {
+        state.hasLid = checked;
+        const panel = document.getElementById('lid-options-panel');
+        const btnLid = document.getElementById('btn-export-lid');
+        const btnBoth = document.getElementById('btn-export-both');
+
+        if (panel) panel.style.display = checked ? 'flex' : 'none';
+        if (btnLid) btnLid.style.display = checked ? 'flex' : 'none';
+        if (btnBoth) btnBoth.style.display = checked ? 'flex' : 'none';
+
+        requestMeshUpdate();
+      }
+
+      function setClearance(val) {
+        state.lidClearance = val;
+        document.getElementById('input-lid-clearance').value = val;
+        document.getElementById('range-lid-clearance').value = val;
+        requestMeshUpdate();
+        showToast(`Fit tolerance set to ${val}mm`);
+      }
+
+      // Calculations for Material & Slicing
       function updateCalculations() {
         const { length, width, height, wallThickness, bottomThickness, fillet, cols, rows, dividerThickness } = state;
 
@@ -1647,13 +2196,11 @@
         const R_count = rows;
         const R = Math.min(fillet, L / 2 - 0.5, W / 2 - 0.5);
 
-        // Outer Area with 4 corner fillets
-        // Area of standard rectangle = L * W; each corner removes (R^2 - pi*R^2/4)
+        // Box Volume
         const cornerCutout = (4 - Math.PI) * (R * R);
         const outerArea = Math.max(0, (L * W) - cornerCutout);
-        const outerVolume = outerArea * H; // mm^3
+        const outerVolume = outerArea * H;
 
-        // Compartments
         const availX = Math.max(0, L - 2 * tw - (C - 1) * td);
         const availY = Math.max(0, W - 2 * tw - (R_count - 1) * td);
         const cellW = availX / C;
@@ -1663,54 +2210,76 @@
         const pocketVolume = cellW * cellH * cellDepth;
         const totalPocketsVolume = (C * R_count) * pocketVolume;
 
-        // Solid Material Volume
-        const solidVolumeMm3 = Math.max(0, outerVolume - totalPocketsVolume);
-        const solidVolumeCm3 = solidVolumeMm3 / 1000.0;
+        const boxSolidMm3 = Math.max(0, outerVolume - totalPocketsVolume);
+        const boxWeightG = (boxSolidMm3 / 1000.0) * 1.24;
 
-        // PLA density: ~1.24 g/cm³
-        const plaDensity = 1.24;
-        const estWeightGrams = solidVolumeCm3 * plaDensity;
+        // Lid Volume
+        let lidWeightG = 0;
+        let lidSolidMm3 = 0;
 
-        // Filament length (1.75mm diameter: cross section area = pi * (1.75/2)^2 = 2.405 mm^2)
-        const filamentArea = Math.PI * Math.pow(1.75 / 2, 2);
-        const filamentLengthMeters = (solidVolumeMm3 / filamentArea) / 1000.0;
+        if (state.hasLid) {
+          const vPlate = outerArea * state.lidThickness;
+          const lipL = Math.max(10, L - 2 * tw - 2 * state.lidClearance);
+          const lipW = Math.max(10, W - 2 * tw - 2 * state.lidClearance);
+          const rLip = Math.max(0, R - tw - state.lidClearance);
+          const aLipOut = (lipL * lipW) - (4 - Math.PI) * (rLip * rLip);
 
-        // Estimated Print Time (Bambu standard ~20g/hr)
-        const estPrintMinutes = Math.round((estWeightGrams / 22.0) * 60 + 10);
+          const inLipL = Math.max(4, lipL - 2 * state.lidLipThickness);
+          const inLipW = Math.max(4, lipW - 2 * state.lidLipThickness);
+          const rInLip = Math.max(0, rLip - state.lidLipThickness);
+          const aLipIn = (inLipL * inLipW) - (4 - Math.PI) * (rInLip * rInLip);
+
+          const vLip = Math.max(0, aLipOut - aLipIn) * state.lidLipDepth;
+          lidSolidMm3 = vPlate + vLip;
+          lidWeightG = (lidSolidMm3 / 1000.0) * 1.24;
+        }
+
+        const totalSolidMm3 = boxSolidMm3 + lidSolidMm3;
+        const totalWeightG = boxWeightG + lidWeightG;
+        const totalCm3 = totalSolidMm3 / 1000.0;
+
+        // Print Time
+        const estPrintMinutes = Math.round((totalWeightG / 22.0) * 60 + 15);
         const printHours = Math.floor(estPrintMinutes / 60);
         const printMins = estPrintMinutes % 60;
 
-        // Filament cost ($20/kg spool -> $0.02/g)
-        const estCost = (estWeightGrams * 0.02).toFixed(2);
-
-        // Update DOM
-        document.getElementById('stat-weight-hero').textContent = `~${estWeightGrams.toFixed(1)} g`;
-        document.getElementById('stat-volume').textContent = `${solidVolumeCm3.toFixed(2)} cm³`;
-        document.getElementById('stat-length').textContent = `~${filamentLengthMeters.toFixed(1)} m`;
+        // DOM update
+        document.getElementById('stat-weight-hero').textContent = `~${totalWeightG.toFixed(1)} g`;
+        document.getElementById('stat-box-weight').textContent = `~${boxWeightG.toFixed(1)} g`;
+        document.getElementById('stat-lid-weight').textContent = state.hasLid ? `~${lidWeightG.toFixed(1)} g` : '0 g';
+        document.getElementById('stat-volume').textContent = `${totalCm3.toFixed(2)} cm³`;
         document.getElementById('stat-time').textContent = `~${printHours}h ${printMins}m`;
-        document.getElementById('stat-cost').textContent = `~$${estCost} (@$20/kg)`;
 
-        // Update Compartment info
+        const recessEl = document.getElementById('readout-recess-depth');
+        if (recessEl) recessEl.textContent = state.lidLipDepth.toFixed(1);
+
         document.getElementById('readout-total-cells').textContent = `${C * R_count} cells (${C} × ${R_count})`;
-        document.getElementById('readout-cell-size').textContent = `${cellW.toFixed(1)} × ${cellH.toFixed(1)} × ${cellDepth.toFixed(1)} mm`;
+        const activeCellH = state.hasLid ? Math.max(0, (H - state.lidLipDepth) - tb) : cellDepth;
+        document.getElementById('readout-cell-size').textContent = state.hasLid
+          ? `${cellW.toFixed(1)} × ${cellH.toFixed(1)} × ${activeCellH.toFixed(1)} mm (分格避位 -${state.lidLipDepth.toFixed(1)}mm)`
+          : `${cellW.toFixed(1)} × ${cellH.toFixed(1)} × ${cellDepth.toFixed(1)} mm`;
       }
 
-      // Check Bambu Lab 256 x 256 x 256 mm limit
       function updateBambuLimitCheck() {
         const badge = document.getElementById('bambu-status-badge');
         const badgeText = document.getElementById('badge-text');
         const iconFit = document.getElementById('badge-icon-fit');
         const iconWarn = document.getElementById('badge-icon-warn');
 
-        const exceeds = state.length > BAMBU_LIMIT || state.width > BAMBU_LIMIT || state.height > BAMBU_LIMIT;
+        let exceeds = state.length > BAMBU_LIMIT || state.width > BAMBU_LIMIT || state.height > BAMBU_LIMIT;
+
+        if (state.hasLid && state.lidViewMode === 'sideBySide') {
+          const totalPrintSpanX = state.length * 2 + 12;
+          if (totalPrintSpanX > BAMBU_LIMIT && state.width > BAMBU_LIMIT) {
+            exceeds = true;
+          }
+        }
 
         if (exceeds) {
           badge.classList.remove('fit');
           badge.classList.add('exceeded');
           iconFit.style.display = 'none';
           iconWarn.style.display = 'inline-block';
-          
-          const maxDim = Math.max(state.length, state.width, state.height);
           badgeText.textContent = `⚠️ Exceeds Bambu Build Plate (256mm max)`;
         } else {
           badge.classList.remove('exceeded');
@@ -1722,8 +2291,10 @@
       }
 
       function updateFilenamePreview() {
-        const filename = `Box_${Math.round(state.length)}x${Math.round(state.width)}x${Math.round(state.height)}_${state.cols}x${state.rows}.stl`;
-        document.getElementById('filename-preview').textContent = filename;
+        const boxName = `Box_${Math.round(state.length)}x${Math.round(state.width)}x${Math.round(state.height)}_${state.cols}x${state.rows}.stl`;
+        const lidName = `Lid_${Math.round(state.length)}x${Math.round(state.width)}.stl`;
+        const preview = state.hasLid ? `${boxName} + ${lidName}` : boxName;
+        document.getElementById('filename-preview').textContent = preview;
       }
 
       // ==========================================
@@ -1738,7 +2309,10 @@
         { key: 'fillet', input: 'input-fillet', range: 'range-fillet', isFloat: true },
         { key: 'cols', input: 'input-cols', range: 'range-cols', isFloat: false },
         { key: 'rows', input: 'input-rows', range: 'range-rows', isFloat: false },
-        { key: 'divider', keyState: 'dividerThickness', input: 'input-divider', range: 'range-divider', isFloat: true }
+        { key: 'divider', keyState: 'dividerThickness', input: 'input-divider', range: 'range-divider', isFloat: true },
+        { key: 'lidClearance', input: 'input-lid-clearance', range: 'range-lid-clearance', isFloat: true },
+        { key: 'lidLipDepth', input: 'input-lid-lip', range: 'range-lid-lip', isFloat: true },
+        { key: 'lidThickness', input: 'input-lid-thick', range: 'range-lid-thick', isFloat: true }
       ];
 
       function setupParamListeners() {
@@ -1749,7 +2323,6 @@
 
           if (!numInput || !rangeInput) return;
 
-          // Range slider input
           rangeInput.addEventListener('input', (e) => {
             const val = binding.isFloat ? parseFloat(e.target.value) : parseInt(e.target.value, 10);
             state[stateKey] = val;
@@ -1757,7 +2330,6 @@
             requestMeshUpdate();
           });
 
-          // Number box input
           numInput.addEventListener('input', (e) => {
             const val = binding.isFloat ? parseFloat(e.target.value) : parseInt(e.target.value, 10);
             if (!isNaN(val)) {
@@ -1803,7 +2375,6 @@
         state.fillet = Fillet;
         state.dividerThickness = Div;
 
-        // Sync inputs
         document.getElementById('input-length').value = L;
         document.getElementById('range-length').value = L;
         document.getElementById('input-width').value = W;
@@ -1824,7 +2395,7 @@
         document.getElementById('range-divider').value = Div;
 
         requestMeshUpdate();
-        showToast(`Applied preset: ${L}×${W}×${H}mm (${C}×${R_cnt})`);
+        showToast(`Preset applied: ${L}×${W}×${H}mm (${C}×${R_cnt})`);
       }
 
       // ==========================================
@@ -1858,6 +2429,7 @@
       function toggleWireframe() {
         state.isWireframe = !state.isWireframe;
         material.wireframe = state.isWireframe;
+        lidMaterial.wireframe = state.isWireframe;
         const btn = document.getElementById('btn-wireframe-toggle');
         const label = document.getElementById('wireframe-label');
         if (state.isWireframe) {
@@ -1889,11 +2461,11 @@
       function setFilamentColor(hex, dotElem) {
         state.filamentColor = hex;
         material.color.set(hex);
+        lidMaterial.color.set(hex);
         document.querySelectorAll('.color-dot').forEach(el => el.classList.remove('active'));
         if (dotElem) dotElem.classList.add('active');
       }
 
-      // Theme Toggle (Dark/Light)
       function setupThemeToggle() {
         const toggleBtn = document.getElementById('theme-toggle-btn');
         const iconMoon = document.getElementById('theme-icon-moon');
@@ -1910,7 +2482,6 @@
             scene.background.set(isLight ? 0xf1f5f9 : 0x0b0f19);
           }
 
-          // Rebuild plate colors for theme
           if (buildPlateGroup) {
             scene.remove(buildPlateGroup);
             createBambuBuildPlate();
@@ -1935,28 +2506,58 @@
       // ==========================================
       // STL EXPORT (BAMBU STUDIO COMPATIBLE)
       // ==========================================
-      function exportSTL() {
-        if (!boxMesh) return;
+      function exportSTL(target = 'box') {
+        const L = Math.round(state.length);
+        const W = Math.round(state.width);
+        const H = Math.round(state.height);
+        const C = state.cols;
+        const R = state.rows;
 
-        const formatSelect = document.getElementById('export-format');
-        const isBinary = formatSelect ? formatSelect.value === 'binary' : true;
-        const filename = `Box_${Math.round(state.length)}x${Math.round(state.width)}x${Math.round(state.height)}_${state.cols}x${state.rows}.stl`;
+        let exportObject;
+        let filename;
+
+        if (target === 'box') {
+          if (!boxMesh) return;
+          // Clone box positioned at origin flat on bed
+          const clone = boxMesh.clone();
+          clone.position.set(0, 0, 0);
+          clone.rotation.set(0, 0, 0);
+          exportObject = clone;
+          filename = `Box_${L}x${W}x${H}_${C}x${R}.stl`;
+        } else if (target === 'lid') {
+          if (!lidMesh) return;
+          // Lid printed flat face on bed
+          const clone = lidMesh.clone();
+          clone.position.set(0, 0, 0);
+          clone.rotation.set(0, 0, 0);
+          exportObject = clone;
+          filename = `Lid_${L}x${W}_clearance${state.lidClearance}mm.stl`;
+        } else if (target === 'both') {
+          if (!boxMesh || !lidMesh) return;
+          const exportGroup = new THREE.Group();
+          const boxClone = boxMesh.clone();
+          const lidClone = lidMesh.clone();
+
+          // Arrange side by side on plate
+          const spacing = 14;
+          const shiftX = (L + spacing) / 2;
+          boxClone.position.set(-shiftX, 0, 0);
+          boxClone.rotation.set(0, 0, 0);
+
+          lidClone.position.set(shiftX, 0, 0);
+          lidClone.rotation.set(0, 0, 0);
+
+          exportGroup.add(boxClone);
+          exportGroup.add(lidClone);
+          exportObject = exportGroup;
+          filename = `Set_Box_and_Lid_${L}x${W}x${H}.stl`;
+        }
 
         try {
-          let output;
-          if (typeof THREE.STLExporter !== 'undefined') {
-            const exporter = new THREE.STLExporter();
-            output = exporter.parse(boxMesh, { binary: isBinary });
-          } else {
-            // Fallback direct binary STL generator
-            output = exportCustomBinarySTL(boxMesh.geometry);
-          }
+          const exporter = new THREE.STLExporter();
+          const output = exporter.parse(exportObject, { binary: true });
+          const blob = new Blob([output], { type: 'application/octet-stream' });
 
-          const blob = new Blob([output], {
-            type: isBinary ? 'application/octet-stream' : 'text/plain'
-          });
-
-          // Trigger browser download
           const link = document.createElement('a');
           link.href = URL.createObjectURL(blob);
           link.download = filename;
@@ -1965,70 +2566,11 @@
           document.body.removeChild(link);
           URL.revokeObjectURL(link.href);
 
-          showToast(`Exported ${filename} (${isBinary ? 'Binary' : 'ASCII'})`);
+          showToast(`Exported ${filename} (Binary STL)`);
         } catch (err) {
           console.error("Export error:", err);
           showToast(`Export failed: ${err.message}`);
         }
-      }
-
-      // Built-in fallback binary STL generator for 100% reliability
-      function exportCustomBinarySTL(geometry) {
-        const pos = geometry.attributes.position;
-        const triCount = pos.count / 3;
-        const bufferSize = 84 + (triCount * 50);
-        const buffer = new ArrayBuffer(bufferSize);
-        const view = new DataView(buffer);
-
-        // 80-byte header
-        const header = "Bambu Studio Compatible Parametric Storage Box";
-        for (let i = 0; i < 80; i++) {
-          view.setUint8(i, i < header.length ? header.charCodeAt(i) : 0);
-        }
-
-        // 4-byte triangle count
-        view.setUint32(80, triCount, true);
-
-        let offset = 84;
-        const vA = new THREE.Vector3();
-        const vB = new THREE.Vector3();
-        const vC = new THREE.Vector3();
-        const normal = new THREE.Vector3();
-
-        for (let i = 0; i < triCount; i++) {
-          const idx = i * 3;
-          vA.fromBufferAttribute(pos, idx);
-          vB.fromBufferAttribute(pos, idx + 1);
-          vC.fromBufferAttribute(pos, idx + 2);
-
-          // Calculate normal
-          normal.subVectors(vB, vA).cross(new THREE.Vector3().subVectors(vC, vA)).normalize();
-
-          // Normal vector
-          view.setFloat32(offset, normal.x, true); offset += 4;
-          view.setFloat32(offset, normal.y, true); offset += 4;
-          view.setFloat32(offset, normal.z, true); offset += 4;
-
-          // Vertex A
-          view.setFloat32(offset, vA.x, true); offset += 4;
-          view.setFloat32(offset, vA.y, true); offset += 4;
-          view.setFloat32(offset, vA.z, true); offset += 4;
-
-          // Vertex B
-          view.setFloat32(offset, vB.x, true); offset += 4;
-          view.setFloat32(offset, vB.y, true); offset += 4;
-          view.setFloat32(offset, vB.z, true); offset += 4;
-
-          // Vertex C
-          view.setFloat32(offset, vC.x, true); offset += 4;
-          view.setFloat32(offset, vC.y, true); offset += 4;
-          view.setFloat32(offset, vC.z, true); offset += 4;
-
-          // Attribute byte count (0)
-          view.setUint16(offset, 0, true); offset += 2;
-        }
-
-        return buffer;
       }
 
       function showToast(message) {
@@ -2042,7 +2584,7 @@
       }
 
       // ==========================================
-      // APPLICATION BOOTSTRAP
+      // BOOTSTRAP
       // ==========================================
       window.addEventListener('DOMContentLoaded', () => {
         initThree();
